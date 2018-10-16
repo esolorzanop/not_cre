@@ -3,7 +3,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>TEVCOL - Comprobantes de Depósito Digital</title>
+<title>TEVCOL - Control de Notas de Crédito</title>
 <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <link rel="stylesheet" type="text/css" href="css/index.css">
 <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
@@ -19,21 +19,24 @@ function nuevo()
 	}
 	if (document.ingreso.validar.value=="4")
 	{    
-	   alert("Usuario Incorrecto...!");
+	   alert("Usuario o Clave Incorrecto, intente nuevamente...!");
+		document.ingreso.nombre.value="";
+		document.ingreso.clave.value="";   
+	    document.ingreso.nombre.focus();		
 	}
-	if (document.ingreso.validar.value=="5")
+	/*if (document.ingreso.validar.value=="5")
 	{   
 	   alert("Clave Incorrecta...!");
-	   document.ingreso.nombre.value = "<?php echo $_SESSION['LOGIN'];?>";
+	   document.ingreso.nombre.value = "<?php //echo $_SESSION['LOGIN'];?>";
 	   document.ingreso.clave.focus();
-	}
-	if (document.ingreso.validar.value=="8")
+	}*/
+	/*if (document.ingreso.validar.value=="8")
 	{    
 	    alert("Contraseña enviada por correo.\nSu clave de acceso al sistema se envio a la dirección de correo registrada para este usuario");
- 	    document.ingreso.nombre.value = "<?php echo $_SESSION['LOGIN'];?>";
+ 	    document.ingreso.nombre.value = "<?php //echo $_SESSION['LOGIN'];?>";
 	    document.ingreso.clave.value="";   
 	    document.ingreso.clave.focus();		
-	}
+	}*/
 	if (document.ingreso.validar.value=="50")
 	{    
 		alert('Usted ha salido del sistema.\nVuelva pronto.');
@@ -114,8 +117,8 @@ function validarrc()
                     <p><span class="fa fa-lock"></span><input name="clave" type="password" required id="clave"  placeholder="Clave" onKeyPress="return sig2(event);"></p>
                            <input name="validar" type="hidden" id="validar" value="<?php echo isset($_REQUEST["num"]) ? $_REQUEST["num"]:NULL; ?>">
                      <div>
-                        <span style="width:48%; text-align:left;  display: inline-block;"><a class="small-text" href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='block';document.getElementById('fade').style.display='block'">Olvido su clave? / Recuperela aquí</a></span>
-                        <span style="width:50%; text-align:right;  display: inline-block;"><input name="ingresar" id="ingresar" type="button" value="Ingresar" onClick="validar1();"></span>
+                        <!--<span style="width:48%; text-align:left;  display: inline-block;"><a class="small-text" href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='block';document.getElementById('fade').style.display='block'">Olvido su clave? / Recuperela aquí</a></span>-->
+                        <span style="width:50%; text-align:center;  display: inline-block;"><input name="ingresar" id="ingresar" type="button" value="Ingresar" onClick="validar1();"></span>
                      </div>
                   </fieldset>
                 <div class="clearfix"></div>
