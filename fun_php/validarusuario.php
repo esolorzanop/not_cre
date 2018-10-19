@@ -34,13 +34,13 @@ $stid = oci_parse($con, 'begin SP_CHK_LOGIN_NC(:p_usuario,:p_clave,:p_mensaje); 
 							//echo "<script>alert('".$mensaje."');</script>";
 
 
-	if($mensaje=='no pasa') {
-		$URL="../index.php?num=4";
+	if($mensaje=='pasa') {
+		$URL="../index.php?num=1";
+		$_SESSION['LOGIN'] = $login;		
 		//$_SESSION['LOGIN'] = $login;		
 	}
 	else{
-		$URL="../index.php?num=1";
-		$_SESSION['LOGIN'] = $login;
+		$URL="../index.php?num=4";
 		//$_SESSION['UW_ID'] = $row['UW_ID'];
 		//$_SESSION['NOMBRE'] = $row['LU_NOMBRE'];		
 	}

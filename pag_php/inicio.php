@@ -7,7 +7,7 @@ if($_SESSION['LOGIN'] == null) echo "<script>parent.window.location.href='../fun
   <meta charset="utf-8">
 <title>TEVCOL - Comprobantes de Depósito Digital</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <!--<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>-->
@@ -15,7 +15,7 @@ if($_SESSION['LOGIN'] == null) echo "<script>parent.window.location.href='../fun
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>  
 <script>
 		$(document).ready(function(){
-			cargarproductos(1);
+			cargarproductos();
 		})
 
 		$(function() {
@@ -27,9 +27,9 @@ if($_SESSION['LOGIN'] == null) echo "<script>parent.window.location.href='../fun
 			  });
 		});	
 
-		function cargarproductos(limite){
-			var url="comprod.php";
-			$.post(url,{limite: limite},function (responseText){
+		function cargarproductos(){
+			var url="compfact.php";
+			$.post(url,function (responseText){
 				$("#productos").html(responseText);
 			});
 		}
@@ -42,34 +42,30 @@ if($_SESSION['LOGIN'] == null) echo "<script>parent.window.location.href='../fun
 		}	
 </script>
 </head>
-<body style="background:url(../img/fondo.gif)">
-<!--	<center><img src="../img/logo2.png" class="img-fluid" style="height: 100px; width: 450px; display: block;" alt="Responsive image"></center>	-->
-<nav class="navbar  navbar-inverse" role="navigation">
-<!--<nav class="navbar  navbar-inverse navbar-fixed-top" role="navigation">
-  <!-- El logotipo y el icono que despliega el menú se agrupan
-       para mostrarlos mejor en los dispositivos móviles -->
-  <div class="navbar-header">
-    <button type="button" class="navbar-toggle" data-toggle="collapse"
-            data-target=".navbar-ex1-collapse">
-      <span class="sr-only">Desplegar navegación</span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </button>
+<body style="background:url(../img/fondo.gif)">	
+	<center><img src="../img/logo.png" class="img-fluid" alt="TEVCOL CIA LTDA."></center>
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #212529;">  
+	<a class="navbar-brand" href="#"></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menuPrin" aria-controls="menuPrin" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="menuPrin">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+		  <a class="nav-link" href="javascript: void(0);" onClick="javascript:cargarproductos();"><strong>Administración de Facturas</strong></a>
+	  </li>
+      <li class="nav-item">
+		  <a class="nav-link" href="javascript: void(0);" onClick="javascript:cargarusuarios();"><strong>Administración de Notas de Crédito</strong></a>
+	  </li>
+      <li class="nav-item">
+		  <a class="nav-link" href="javascript: void(0);" onClick="javascript:window.location.href='../fun_php/salir.php'"><strong>Salir</strong></a>
+	  </li>
+    </ul>  
   </div>
- 
-  <!-- Agrupar los enlaces de navegación, los formularios y cualquier
-       otro elemento que se pueda ocultar al minimizar la barra -->
-  <div class="collapse navbar-collapse navbar-ex1-collapse">
-    <ul class="nav navbar-nav">
-      <li class="active"><a href="javascript: void(0)" onClick="javascript:cargarproductos(1);"><strong>Comprobantes de Depósitos Digitalizados</strong></a></li>
-      <li><a href="javascript: void(0)" onClick="javascript:cargarusuarios();"><strong>Creación Usuarios del Sistema</strong></a></li>
-      <li><a href="javascript: void(0)" onClick="javascript:window.location.href='../fun_php/salir.php'"><strong>Salir</strong></a></li>
-    </ul>
-  </div>
-</nav>  
+</nav>
+	
 <!--<form id="form1" name="form1" method="post" autocomplete="off">-->
-<div id="productos" class="container" style="margin-top:5px; height:100%; width:100%;">
+<div id="productos" class="container-fluid">
 </div>
 <!--</form>-->
 </body>
