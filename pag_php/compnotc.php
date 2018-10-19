@@ -114,7 +114,7 @@ a:active {
         <div class="col-md-12">
           <div class="card">
             <div class="card-body">
-				<center><h4><strong>FACTURAS A EMITIR NOTAS DE CRÉDITO</strong></h4></center>
+				<center><h4><strong>NOTAS DE CRÉDITO</strong></h4></center>
 				
 			<div class="table-responsive">
               <table class="table table-md table-striped">
