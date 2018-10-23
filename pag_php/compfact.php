@@ -4,7 +4,7 @@ date_default_timezone_set('America/Guayaquil');
 
 if($_SESSION['LOGIN'] == null) echo "<script>parent.window.location.href='../fun_php/salir.php';</script>";
 
-$usuario = $_SESSION['UW_ID'];
+
 
 include("../fun_php/lib.php");
 $con = conectar();
@@ -23,8 +23,8 @@ $sql = 'SELECT count(1) total FROM INTER.INVE_DOCUMENTOS_DAT Where CODI_ADMI_EST
 	$row = oci_fetch_array($rst, OCI_ASSOC);	
 
 if($row['TOTAL'] == 0){
-	//echo "<script>alert('Su busqueda no tiene resultados, intentelo nuevamente...!');window.location.href='adm_001.php?refresca=1';</script>"; 
-	echo "<script>alert('Su busqueda no tiene resultados, intentelo nuevamente...!');</script>"; 
+	echo "<script>alert('Su busqueda no tiene resultados, intentelo nuevamente...!');window.location.href='inicio.php?refresca_fact=1';</script>"; 
+	//echo "<script>alert('Su busqueda no tiene resultados, intentelo nuevamente...!');</script>"; 
 }else{ 
 	if(isset($_POST['limite'])){
 		$limit = $_POST['limite'];
@@ -39,6 +39,8 @@ if($row['TOTAL'] == 0){
 	$n_page_size = 10;
 ?>
 <style>
+input,textarea[disabled]{background-color: #fff; opacity: 1 !important;}
+	
 #wrapper{padding:5px 15px; }
 .card
 	{margin-bottom: 15px; border-radius:0; box-shadow: 0 3px 5px rgba(0,0,0,.1); background:#EBEBEB;}
@@ -91,23 +93,21 @@ a:link {
 }
 a:visited {
 	color: #000;
-	text-decoration: underline;
 }
 a:hover {
 	color: orange;
 	background-color: black;
 	text-decoration: underline;
 }
-a:active {
-	color: #000;
+a:active {	
 	text-decoration: underline;
 }
 
-.visited {
-	color: #000;
+.visited {	
 	text-decoration: underline;
-}	
+}		
 </style>
+
   <div id="wrapper" class="animate">
     <div class="container-fluid">      
       <div class="row">
@@ -115,19 +115,145 @@ a:active {
           <div class="card">
             <div class="card-body">
 				<center><h4><strong>FACTURAS A EMITIR NOTAS DE CRÉDITO</strong></h4></center>
-				
+<!------------------------------------------------------------------------------>
+<form id="form1" name="form1" method="post" autocomplete="off" class="form-horizontal">
+<fieldset>
+
+<!--<legend>Búsqueda de Facturas</legend>-->
+<hr>
+<div class="form-row">	
+	<div class="form-group col-md-2">
+	   <label for="b_nfacturas">Factura</label>
+	   <input id="b_nfacturas" name="b_nfacturas" type="search" placeholder="Número de Factura" class="form-control"  data-mask="000-000-000000000" data-mask-clearifnotmatch="true">    	
+	</div>
+	<div class="form-group col-md-2">
+ 	   <label for="b_cliente">Cliente</label>
+		<input id="b_cliente" name="b_cliente" type="search"  placeholder="Nombre de Cliente" class="form-control">    	
+		<input name="cod_cliente" type="hidden" id="cod_cliente"></td>
+	</div>
+	<?php
+	$sql_est = 'select CODI_INVE_TIPO_EST cod_esta, NOMB_INVE_TIPO_EST nomb_esta from INTER.INVE_TIPO_EST_REF WHERE CODI_INVE_TIPO_DOCU = \'FACTU\' AND CODI_INVE_TIPO_EST > 0';
+//echo $sql_est."<br>";
+
+	$rst_est = oci_parse($con, $sql_est);
+	$r = oci_execute($rst_est);
+
+	if (!$r) {
+		$e = oci_error($rst_est); 
+		echo "Ocurrió un error al verificar estados...!";
+	}
+	
+	?>
+	<div class="form-group col-md-2">
+		<label for="busEstadoFact">Estado</label>
+		<select id="busEstadoFact" name="busEstadoFact" class="form-control" onchange="javaScript:funEstadoFact();">
+		  <option value="-1000">:: Seleccione Estado ::</option>
+			<?php
+				while($row_est = oci_fetch_array($rst_est, OCI_ASSOC))
+						{
+							if ($row_est['COD_ESTA'] == $_SESSION['busEstadoFact']) 
+									$valor = "selected='selected'";
+								else
+									$valor = "";
+					
+								echo "<option value='".$row_est['COD_ESTA']."' $valor>".htmlentities($row_est['NOMB_ESTA'])."</option>\n";
+						}
+			?>
+		</select>
+	</div>
+	<div class="form-group col-md-2">
+		  <label for="b_dfecha">Fecha Inicial</label>
+		  <div class="input-group">
+			  <input id="b_dfecha" name="b_dfecha" class="form-control" placeholder="Fecha" type="text" >
+			  <i data-feather="calendar"></i><script>feather.replace()</script>			  
+		  </div>	  
+	</div>
+	<div class="form-group col-md-2">
+		  <label for="b_dfecha">Fecha Final</label>
+		  <div class="input-group">		  	
+			  <input id="b_hfecha" name="b_hfecha" class="form-control" placeholder="Fecha" type="text" >
+			  <i data-feather="calendar"></i><script>feather.replace()</script>			  
+		  </div>	  
+	</div>	
+	<script>
+		
+ $('#b_dfecha').datetimepicker({
+  lang:'es',
+ closeOnWithoutClick :true,
+ closeOnDateSelect: true,	 
+		dayOfWeekStart : 1,
+		format:'d/m/Y',
+		//format:'d/m/Y H:i',	 
+		//formatTime:'H:i',
+		formatDate:'d.m.Y',
+		mask:'39/19/9999',
+	 	//mask:'39/19/9999 29:59',	 
+		timepickerScrollbar:false,
+		timespan: 8.00-17.00,
+		step:5,	  
+onShow:function( ct ){
+   this.setOptions({
+    maxDate:$('#b_dfecha').val()?$('#b_dfecha').val():false
+   })
+  },		
+		timepicker:false
+
+ });
+		
+ $('#b_hfecha').datetimepicker({
+  lang:'es',
+ closeOnWithoutClick :true,
+ closeOnDateSelect: true, 	 
+		dayOfWeekStart : 1,
+		format:'d/m/Y',
+		//format:'d/m/Y H:i',	 
+		//formatTime:'H:i',
+		formatDate:'d.m.Y',
+		mask:'39/19/9999',
+	 	//mask:'39/19/9999 29:59',	 
+		timepickerScrollbar:false,
+		timespan: 8.00-17.00,
+		step:5,	  
+  onShow:function( ct ){
+   this.setOptions({
+    minDate:$('#b_dfecha').val()?$('#b_dfecha').val():false,
+	maxDate:new Date()
+   })
+  },
+  timepicker:false
+ });
+</script>
+	
+	
+	<div class="form-group col-md-2">		  		  
+		  <button id="b_busqueda" name="b_busqueda" title="Buscar Datos" class="btn btn-default btn-lg">
+			  	<i data-feather="search"></i><script>feather.replace()</script>
+			  </button> 			
+		  <button id="b_busqueda" name="b_busqueda" title="Enviar a Excel" class="btn btn-default btn-lg">
+			  	<i data-feather="file-text"></i><script>feather.replace()</script>
+			  </button> 						  		  
+		  <button id="b_limpiar" name="b_limpiar" title="Refrescar Página" class="btn btn-default btn-lg" onclick="javaScript:funRefresca();">
+			  	<i data-feather="refresh-cw"></i><script>feather.replace()</script>
+			  </button> 					
+	</div>	
+</div>	
+
+</fieldset>
+</form>			
+<span class="clearfix"></span>				
+<!------------------------------------------------------------------------------>
 			<div class="table-responsive">
               <table class="table table-md table-striped">
                 <thead class="table-dark">
-                  <tr align="center">
-                    <th style="width: 10%">FECHA</th> 
-					<th style="width: 12%">FACTURA #</th>                     
+                  <tr align="center">                    
+					<th style="width: 12%"># FACTURA</th>                     
+					<th style="width: 10%">FECHA</th> 					  
 					<th style="width: 13%">CLIENTE</th> 
                     <th style="width: 20%">DETALLE</th>
 					<th style="width: 10%">TOTAL</th>
-					<th style="width: 10%">FECHA AUTORIZA NC</th>					  
+					<th style="width: 11%">FECHA AUTORIZA NC</th>					  
                     <th style="width: 15%">DETALLE AUTORIZA NC</th>
-                    <th style="width: 10%">ESTADO DOCUMENTO</th>                  
+                    <th style="width: 9%">ESTADO DOCUMENTO</th>                  
                   </tr>
                 </thead>
 <?php
@@ -153,9 +279,9 @@ a:active {
 	$productos="";
 	while($row = oci_fetch_array($rst, OCI_ASSOC))
 	{
-		$productos[$row['ROW_NUMBER']]['CODIGO_FAC'] = $row['CODI_INVE_DOCU,'];						
-		$productos[$row['ROW_NUMBER']]['FECHA_FAC'] = $row['FECH_INVE_DOCU'];	
+		$productos[$row['ROW_NUMBER']]['CODIGO_FAC'] = $row['CODI_INVE_DOCU,'];								
 		$productos[$row['ROW_NUMBER']]['NUMERO_FAC'] = $row['REFE_INVE_DOC'];	
+		$productos[$row['ROW_NUMBER']]['FECHA_FAC'] = $row['FECH_INVE_DOCU'];	
 		
 		$sql_cl = 'select nomb_inve_clie from inve_clientes_dat where codi_admi_empr_fina = \'00001\' and codi_admi_esta = \'A\' and codi_inve_clie ='.$row['CODI_INVE_CLIE'];
 		//echo $sql_cl;		  
@@ -301,6 +427,43 @@ $total_paginas = $limite;
 ?>	  
   </ul>
 </nav>
+
+<link rel="stylesheet" href="../css/jquery.autocomplete.css">
+<script src="../js/jquery.autocomplete.js" type="text/javascript"></script>
+<script src="../js/jquery.mask.js" type="text/javascript"></script>
+<script>
+$('#b_cliente').autocomplete({
+valueKey:'label',
+source:[{
+	url:"../fun_php/busDat.php?f=cli&q=%QUERY%",
+	type:'remote',
+	getValueFromItem:function(item){
+		return item;
+	},
+	ajax:{
+		dataType : 'jsonp'	
+	}
+		}]
+});
+$('#b_cliente').on('selected.xdsoft', function(event, item){
+$("#cod_cliente").val(item.value);
+});	
+$("#b_cliente").keypress(function(e) {
+  if(e.keyCode == 13)
+     {
+	        e.preventDefault();
+  		//	$("#busCiudad").prop('disabled', false);
+			//$("#busCiudad").focus();	       
+			//$("#b_cliente").prop('disabled', true);
+         $(this).autocomplete('close');
+     }
+});
+
+	function funRefresca(){
+			window.location.reload()
+		}	
+</script>
+
 <?php 
 }
 ?>

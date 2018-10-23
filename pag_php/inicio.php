@@ -38,10 +38,12 @@ color: orange !important;
 </style>
 
 <!--<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>-->	
-
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>  	
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="../js/feather.min.js"></script>
+<script src="../js/jquery.datetimepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/jquery.datetimepicker.css"/>	
 <script>
 		$(document).ready(function(){
 			cargarproductos(1);			
@@ -97,8 +99,10 @@ color: orange !important;
 });
 </script>	
 <!--<form id="form1" name="form1" method="post" autocomplete="off">-->
+
 <div id="productos" class="container-fluid">
 </div>
+
 <!--</form>-->
 </body>
 </html>
