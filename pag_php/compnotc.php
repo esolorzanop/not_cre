@@ -115,7 +115,9 @@ a:active {
           <div class="card">
             <div class="card-body">
 				<center><h4><strong>NOTAS DE CRÉDITO</strong></h4></center>
-				
+				<button id="b_limpiar" name="b_limpiar" title="Refrescar Página" class="btn btn-default btn-lg" onclick="javaScript:funRefresca();">
+			  	<i data-feather="refresh-cw"></i><script>feather.replace()</script>
+			  </button> 
 			<div class="table-responsive">
               <table class="table table-md table-striped">
                 <thead class="table-dark">
@@ -301,6 +303,13 @@ $total_paginas = $limite;
 ?>	  
   </ul>
 </nav>
+<script>
+function funRefresca(){
+			window.location.reload()
+		}
+
+</script>
+</script>
 <?php 
 }
 ?>
