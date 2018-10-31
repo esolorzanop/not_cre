@@ -132,7 +132,25 @@ color: orange !important;
 				$("#productos").html(responseText);
 			});
 		}	
+
+	function funIrpag(valor){					
+			var url="detfact.php";
+		
+			$.post(url,{b_nfacturas:valor},function (responseText){
+				$("#productos").html(responseText);
+			});
+		}
 	
+/*////////////////////////////////detallefactura///////////////////////////////////////////////////////////////////*/	
+
+	function limpiardf(){			
+			var url="detfact.php";			
+			
+			$.post(url,{action: 'refrescar'},function (responseText){
+				$("#productos").html(responseText);
+			});
+		}	
+			
 </script>	
 </body>
 </html>

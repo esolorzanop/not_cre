@@ -8,7 +8,7 @@ include("../fun_php/lib.php");
 $con = conectar();
 
 $where = '';
-$accion = $_REQUEST['action'].$_REQUEST['b_estadof'];
+$accion = $_REQUEST['action'];
 
 /*busqueda por numero de facturas*/
 $b_nfacturas = $_REQUEST['b_nfacturas'];
@@ -31,18 +31,18 @@ $b_cliente = isset($_REQUEST['b_cliente']) ? $_REQUEST['b_cliente']:$_SESSION['b
 
 /*busqueda por estado factura*/
 $b_estadof = isset($_REQUEST['b_estadof']) ? $_REQUEST['b_estadof']:$_SESSION['b_estadof'];
-	if ($b_estadof<>'-1000'){
+	if (($b_estadof<>'-1000')&&($b_estadof<>'')){
 		$where_ef = " and CODI_INVE_TIPO_EST = ".$b_estadof;
 		$_SESSION['b_estadof'] = $b_estadof;
 	}else{
-		$where_ef = $_SESSION['b_estadof'] = $_SESSION['b_estadof'] = '';
+		$where_ef = $b_estadof = $_SESSION['b_estadof'] = '';
 		 }
 /*********************************/
 
 /*busqueda por fecha*/
 $b_dfecha = isset($_REQUEST['b_dfecha']) ? $_REQUEST['b_dfecha']:$_SESSION['b_dfecha'];
 $b_hfecha = isset($_REQUEST['b_hfecha']) ? $_REQUEST['b_hfecha']:$_SESSION['b_hfecha'];
-	if (($b_dfecha <> '__/__/____')&&($b_hfecha <> '__/__/____')){
+	if ((($b_dfecha <> '__/__/____')&&($b_hfecha <> '__/__/____'))&&(($b_dfecha <> '')&&($b_hfecha <> ''))){
 		$where_fec = "AND to_date(to_char(FECH_INVE_DOCU, 'dd/mm/yyyy'), 'dd/mm/yyyy')  between to_date('".$b_dfecha."','dd/mm/yyyy') and to_date('".$b_hfecha."','dd/mm/yyyy')";
 		$_SESSION['b_dfecha'] = $b_dfecha;
 		$_SESSION['b_hfecha'] = $b_hfecha;
@@ -62,8 +62,8 @@ if ($accion == 'refrescar'){
 $where = $where_nf.$where_cl.$where_ef.$where_fec;
 
 
-$sql = 'SELECT count(1) total FROM INTER.INVE_DOCUMENTOS_DAT Where CODI_ADMI_ESTA = \'O\' AND CODI_ADMI_EMPR_FINA = \'00001\' AND CODI_ADMI_PUNT_VENT = \'101\' AND CODI_INVE_TIPO_DOCU IN (\'FACTU\',\'REFAC\')'.$where;
-echo $sql."<br>";
+$sql = 'SELECT count(1) total FROM INTER.INVE_DOCUMENTOS_DAT Where CODI_ADMI_ESTA = \'O\' AND CODI_ADMI_EMPR_FINA = \'00001\' AND CODI_ADMI_PUNT_VENT = \'101\' AND CODI_INVE_TIPO_DOCU IN (\'FACTU\',\'REFAC\') AND CODI_INVE_TIPO_EST > 0'.$where;
+//echo $sql."<br>";
 
 	$rst = oci_parse($con, $sql);
 	$r = oci_execute($rst);
@@ -76,8 +76,8 @@ echo $sql."<br>";
 	$row = oci_fetch_array($rst, OCI_ASSOC);	
 
 if($row['TOTAL'] == 0){	
-	echo "<script>alert('Su busqueda no tiene resultados, intentelo nuevamente...!');limpiarf();</script>"; 
-	//echo "<script>alert('Su busqueda no tiene resultados, intentelo nuevamente...!');</script>"; 	
+	//echo "<script>alert('Su busqueda no tiene resultados, intentelo nuevamente...!');limpiarf();</script>"; 
+	echo "<script>alert('Su busqueda no tiene resultados que mostrar, intentelo nuevamente en pocos minutos o espere notificacion vía e-mail...!');</script>"; 	
 }else{ 
 	if(isset($_POST['limite'])){
 		$limit = $_POST['limite'];
@@ -163,11 +163,11 @@ a:active {
 
   <div id="wrapper" class="animate">
     <div class="container-fluid">      
-      <div class="row">
+      <div class="row justify-content-md-center">
         <div class="col-md-12">
           <div class="card">
             <div class="card-body">
-				<center><h4><strong>FACTURAS A EMITIR NOTAS DE CRÉDITO</strong></h4></center>
+				<center><h4><strong>LISTADO FACTURAS QUE SOLICITAN EMITIR NOTAS DE CRÉDITO</strong></h4></center>
 <!------------------------------------------------------------------------------>
 <form id="form1" name="form1" method="post" autocomplete="off" class="form-horizontal">
 <fieldset>
@@ -176,13 +176,13 @@ a:active {
 <hr>
 <div class="form-row">	
 	<div class="form-group col-md-2">
-	   <label for="b_nfacturas">Factura</label>
+		<label for="b_nfacturas"><strong>Factura</strong></label>
 	   <input id="b_nfacturas" name="b_nfacturas" type="text" placeholder="Número de Factura" class="form-control"  data-mask="000-000-000000000" data-mask-clearifnotmatch="true" <?php if ($b_nfacturas <> ''){ ?> readonly value="<?php echo $b_nfacturas; ?>" <?php } ?> >    	
 	</div>
 	<div class="form-group col-md-2">
- 	   <label for="b_cliente">Cliente</label>
+		<label for="b_cliente"><strong>Cliente</strong></label>
 		<input id="b_cliente" name="b_cliente" type="text"  placeholder="Nombre de Cliente" class="form-control" <?php if ($b_cliente <> ''){ ?> readonly value="<?php echo $b_cliente; ?>" <?php } ?>>    	
-		<input name="cod_cliente" type="hidden" id="cod_cliente" <?php if ($cod_cliente <> ''){ ?> readonly value="<?php echo $cod_cliente; ?>" <?php } ?>></td>
+		<input name="cod_cliente" type="hidden" id="cod_cliente" <?php if ($cod_cliente <> ''){ ?> readonly value="<?php echo $cod_cliente; ?>" <?php } ?>>
 	</div>
 	<?php
 	$sql_est = 'select CODI_INVE_TIPO_EST cod_esta, NOMB_INVE_TIPO_EST nomb_esta from INTER.INVE_TIPO_EST_REF WHERE CODI_INVE_TIPO_DOCU = \'FACTU\' AND CODI_INVE_TIPO_EST > 0';
@@ -198,7 +198,7 @@ a:active {
 	
 	?>
 	<div class="form-group col-md-2">
-		<label for="b_estadof">Estado</label>
+		<label for="b_estadof"><strong>Estado</strong></label>
 		<select id="b_estadof" name="b_estadof" class="form-control">
 		  <option value="-1000">:: Seleccione Estado ::</option>
 			<?php
@@ -215,14 +215,14 @@ a:active {
 		</select>
 	</div>
 	<div class="form-group col-md-2">
-		  <label for="b_dfecha">Fecha Inicial</label>
+		<label for="b_dfecha"><strong>Fecha Inicial</strong></label>
 		  <div class="input-group">
 			  <input id="b_dfecha" name="b_dfecha" class="form-control" placeholder="Fecha" type="text" <?php if (($b_dfecha <> '__/__/____')&&($b_dfecha <> '')){ ?> readonly value="<?php echo $b_dfecha; ?>" <?php } ?>>
 			  <i data-feather="calendar"></i><script>feather.replace()</script>			  
 		  </div>	  
 	</div>
 	<div class="form-group col-md-2">
-		  <label for="b_dfecha">Fecha Final</label>
+		<label for="b_dfecha"><strong>Fecha Final</strong></label>
 		  <div class="input-group">		  	
 			  <input id="b_hfecha" name="b_hfecha" class="form-control" placeholder="Fecha" type="text"  <?php if (($b_hfecha <> '__/__/____')&&($b_hfecha <> '')){ ?> readonly value="<?php echo $b_hfecha; ?>" <?php } ?>>
 			  <i data-feather="calendar"></i><script>feather.replace()</script>			  
@@ -282,14 +282,13 @@ onShow:function( ct ){
 		  <button id="b_busqueda" name="b_busqueda" title="Buscar Datos" class="btn btn-default btn-lg">
 			  	<i data-feather="search"></i><script>feather.replace();</script>
 			  </button> 			
-		  <button id="b_earchivo" name="b_earchivo" title="Enviar a Excel" class="btn btn-default btn-lg">
+		  <button id="b_earchivo" name="b_earchivo" title="Enviar Datos Hacia Archivo Excel" class="btn btn-default btn-lg" onclick="window.location='../fun_php/reporte_001.php'">
 			  	<i data-feather="file-text"></i><script>feather.replace();</script>
 			  </button> 						  		  
 		  <button id="b_limpiar" name="b_limpiar" title="Refrescar Página" class="btn btn-default btn-lg">
 			  	<i data-feather="refresh-cw"></i><script>feather.replace();</script>
 			  </button> 					
-	</div>	
-	<a href="../fun_php/reporte_001.php" title="Reporte de acreditaci&oacute;n bancaria"><img src="../images/excel.png" /></a>
+	</div>		
 </div>	
 
 </fieldset>
@@ -311,16 +310,18 @@ onShow:function( ct ){
                   </tr>
                 </thead>
 <?php
-	$sql = 'SELECT * FROM (SELECT ROWNUM AS FILA, CONSULTA.* FROM (SELECT rownum ROW_NUMBER, CODI_INVE_DOCU, to_char(FECH_INVE_DOCU, \'DD/MM/YYYY\') FECH_INVE_DOCU, I.REFE_INVE_DOC, I.CODI_INVE_CLIE, I.COME_INVE_DOCU, TO_CHAR(IMPO_TOTA_INVE_DOCU, \'FM999,999,999.90\') IMPO_TOTA_INVE_DOCU, to_char(FECH_INVE_APRUE, \'DD/MM/YYYY\') FECH_INVE_APRUE, I.COME_INVE_EST, I.CODI_INVE_TIPO_EST FROM INTER.INVE_DOCUMENTOS_DAT I Where CODI_ADMI_ESTA = \'O\' AND CODI_ADMI_EMPR_FINA = \'00001\' AND CODI_ADMI_PUNT_VENT = \'101\' AND CODI_INVE_TIPO_DOCU IN (\'FACTU\',\'REFAC\') '.$where.' ORDER BY FECH_INVE_DOCU DESC) CONSULTA) WHERE FILA >= (((:n_page_number-1) * :n_page_size) + 1) AND FILA < ((:n_page_number * :n_page_size) + 1 )';// AND CODI_INVE_TIPO_EST IN (1,2,3,4) LAS QUE DEBE CARGAR DE FAULT
+	$sql = 'SELECT * FROM (SELECT ROWNUM AS FILA, CONSULTA.* FROM (SELECT rownum ROW_NUMBER, CODI_INVE_DOCU, FECH_INVE_DOCU, 
+         TO_CHAR (FECH_INVE_DOCU, \'DD/MM/YYYY\') FECH_INVE_DOCU1, I.REFE_INVE_DOC, I.CODI_INVE_CLIE, I.COME_INVE_DOCU, TO_CHAR(IMPO_TOTA_INVE_DOCU, \'FM999,999,999.90\') IMPO_TOTA_INVE_DOCU, to_char(FECH_INVE_APRUE, \'DD/MM/YYYY\') FECH_INVE_APRUE, I.COME_INVE_EST, I.CODI_INVE_TIPO_EST FROM INTER.INVE_DOCUMENTOS_DAT I Where CODI_ADMI_ESTA = \'O\' AND CODI_ADMI_EMPR_FINA = \'00001\' AND CODI_ADMI_PUNT_VENT = \'101\' AND CODI_INVE_TIPO_DOCU IN (\'FACTU\',\'REFAC\') AND CODI_INVE_TIPO_EST > 0 '.$where.' ORDER BY FECH_INVE_DOCU DESC) CONSULTA) WHERE FILA >= (((:n_page_number-1) * :n_page_size) + 1) AND FILA < ((:n_page_number * :n_page_size) + 1 )';// AND CODI_INVE_TIPO_EST IN (1,2,3,4) LAS QUE DEBE CARGAR DE FAULT
 									
 	$_SESSION['sql_rpt'] = "";
-	$_SESSION['sql_rpt'] = "SELECT rownum ROW_NUMBER, CODI_INVE_DOCU, to_char(FECH_INVE_DOCU, 'DD/MM/YYYY') FECH_INVE_DOCU, I.REFE_INVE_DOC, I.CODI_INVE_CLIE, I.COME_INVE_DOCU, TO_CHAR(IMPO_TOTA_INVE_DOCU, 'FM999,999,999.90') IMPO_TOTA_INVE_DOCU, to_char(FECH_INVE_APRUE, 'DD/MM/YYYY') FECH_INVE_APRUE, I.COME_INVE_EST, I.CODI_INVE_TIPO_EST FROM INTER.INVE_DOCUMENTOS_DAT I Where CODI_ADMI_ESTA = 'O' AND CODI_ADMI_EMPR_FINA = '00001' AND CODI_ADMI_PUNT_VENT = '101' AND CODI_INVE_TIPO_DOCU IN ('FACTU','REFAC') $where ORDER BY FECH_INVE_DOCU DESC";
+	$_SESSION['sql_rpt'] = "SELECT rownum ROW_NUMBER, CODI_INVE_DOCU, FECH_INVE_DOCU, 
+         TO_CHAR (FECH_INVE_DOCU, 'DD/MM/YYYY') FECH_INVE_DOCU1, I.REFE_INVE_DOC, I.CODI_INVE_CLIE, I.COME_INVE_DOCU, TO_CHAR(IMPO_TOTA_INVE_DOCU, 'FM999,999,999.90') IMPO_TOTA_INVE_DOCU, to_char(FECH_INVE_APRUE, 'DD/MM/YYYY') FECH_INVE_APRUE, I.COME_INVE_EST, I.CODI_INVE_TIPO_EST FROM INTER.INVE_DOCUMENTOS_DAT I Where CODI_ADMI_ESTA = 'O' AND CODI_ADMI_EMPR_FINA = '00001' AND CODI_ADMI_PUNT_VENT = '101' AND CODI_INVE_TIPO_DOCU IN ('FACTU','REFAC') AND CODI_INVE_TIPO_EST > 0 $where ORDER BY FECH_INVE_DOCU DESC";
 	
 	$rst = oci_parse($con, $sql);
 	oci_bind_by_name($rst, ':n_page_number', $n_page_number);	
 	oci_bind_by_name($rst, ':n_page_size', $n_page_size);
 	//echo $sql;
-	echo $_SESSION['sql_rpt'];
+	//echo $_SESSION['sql_rpt'];
 	
 	$r = oci_execute($rst);
 	
@@ -339,7 +340,7 @@ onShow:function( ct ){
 	{
 		$productos[$row['ROW_NUMBER']]['CODIGO_FAC'] = $row['CODI_INVE_DOCU,'];								
 		$productos[$row['ROW_NUMBER']]['NUMERO_FAC'] = $row['REFE_INVE_DOC'];	
-		$productos[$row['ROW_NUMBER']]['FECHA_FAC'] = $row['FECH_INVE_DOCU'];	
+		$productos[$row['ROW_NUMBER']]['FECHA_FAC'] = $row['FECH_INVE_DOCU1'];	
 		
 		$sql_cl = 'select nomb_inve_clie from inve_clientes_dat where codi_admi_empr_fina = \'00001\' and codi_admi_esta = \'A\' and codi_inve_clie ='.$row['CODI_INVE_CLIE'];
 		//echo $sql_cl;		  
@@ -387,7 +388,7 @@ onShow:function( ct ){
 								break;				
 
 								case "NUMERO_FAC":
-								echo "<th scope=\"row\"><a href=\"\">".$value."</a></th>";
+								echo "<th scope=\"row\"><a href=\"#\" onclick=\"javascript:funIrpag('$value');\">".$value."</a></th>";
 								break;																						
 
 								case "DETALLE_FAC":
@@ -529,7 +530,7 @@ $("#b_nfacturas").keypress(function(e) {
 });	
 
 $("#b_busqueda").click(function() {  
-	if (($("#b_nfacturas").val()!="")||($("#cod_cliente").val()!="")||($('#b_estadof').val()!='-1000')||(($("#b_dfecha").val()!="__/__/____")&&($("#b_hfecha").val()!="__/__/____"))){
+	if (($("#b_nfacturas").val()!="")||($("#cod_cliente").val()!="")||($('#b_estadof').val()!='-1000')||($('#b_estadof').val()!='')||(($("#b_dfecha").val()!="__/__/____")&&($("#b_hfecha").val()!="__/__/____"))){
 		buscarf();	
 	}else{
 		alert('Elegir uno o más criterios de busqueda...');

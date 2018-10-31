@@ -6,20 +6,30 @@ date_default_timezone_set('America/Guayaquil');
 
 $conn = conectar();
 
-
 $empresa="TEVCOL_FACT_NC";
 $fecha=date("Y-m-d");
 date_default_timezone_set('America/Guayaquil');
 $nombre = $empresa."_".$fecha.".xls";
 
 header('Content-type: application/vnd.ms-excel; name=excel');
-//header ("Content-type: application/x-msexcel");
 header("Content-Disposition: attachment; filename=$nombre;");
 header("Pragma: no-cache");
 header("Expires: 0");
 
-$usuario = "Edgar";//""$_SESSION['nID'];
-$where = "";
+
+$sql_usu = 'SELECT (nom1_segu_usua||\' \'||nom2_segu_usua||\' \'||ape1_segu_usua||\' \'||ape2_segu_usua) nom_ape FROM SEGU_USUARIOS_dAT WHERE CODI_ADMI_ESTA = \'A\' and logi_segu_usua like trim(\''.$_SESSION['LOGIN'].'\')';
+		//echo $sql_usu;		  
+
+				$rst_usu = oci_parse($conn, $sql_usu);
+				$r = oci_execute($rst_usu);
+
+				if (!$r) {
+					$e = oci_error($rst_usu); 
+					echo "Ocurrió un error al verificar cliente...!";
+				}
+		$row_usu = oci_fetch_array($rst_usu, OCI_ASSOC);		
+		$usuario = $row_usu['NOM_APE'];
+
 ?>	
 <html lang="es-es">
 	<head>
@@ -27,7 +37,7 @@ $where = "";
 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title></title>
-<link rel="stylesheet" type="text/css" href="../css/style.css" media="screen" />
+<!--<link rel="stylesheet" type="text/css" href="../css/style.css" media="screen" />-->
 <style type="text/css">
 	<!--
 	body {
@@ -63,7 +73,7 @@ $where = "";
     </table>
     <table width="100%" border="0" align="center">
       <tr>
-        <td colspan="3"><strong>Usuario Consulta: </strong><?php echo $_SESSION['sUsuario']; ?></td>
+        <td colspan="3"><strong>Usuario Consulta: </strong><?php echo $usuario;//$_SESSION['sUsuario']; ?></td>
         <td colspan="3"><strong>Fecha Reporte:</strong>
         <?php 	
 			$meses = array('0' => '','01' => 'Enero','02' => 'Febrero','03' => 'Marzo','04' => 'Abril','05' => 'Mayo','06' => 'Junio','07' => 'Julio','08' => 'Agosto','09' => 'Septiembre','10' => 'Octubre','11' =>'Noviembre','12' => 'Diciembre');
@@ -104,15 +114,41 @@ $where = "";
 //		echo $sql;	
 		while ($row = oci_fetch_array($rst, OCI_ASSOC)) 
 		{								
+			$sql_cl = 'select nomb_inve_clie from inve_clientes_dat where codi_admi_empr_fina = \'00001\' and codi_admi_esta = \'A\' and codi_inve_clie ='.$row['CODI_INVE_CLIE'];
+		//echo $sql_cl;		  
+
+				$rst_cl = oci_parse($conn, $sql_cl);
+				$r = oci_execute($rst_cl);
+
+				if (!$r) {
+					$e = oci_error($rst_cl); 
+					echo "Ocurrió un error al verificar cliente...!";
+				}
+		$row_cl = oci_fetch_array($rst_cl, OCI_ASSOC);
+		$cliente = $row_cl['NOMB_INVE_CLIE'];
+		
+		$sql_est = 'select NOMB_INVE_TIPO_EST from INTER.INVE_TIPO_EST_REF WHERE CODI_INVE_TIPO_DOCU = \'FACTU\' AND CODI_INVE_TIPO_EST = '.$row['CODI_INVE_TIPO_EST'];
+		//echo $sql_cl;		  
+
+				$rst_est = oci_parse($conn, $sql_est);
+				$r = oci_execute($rst_est);
+
+				if (!$r) {
+					$e = oci_error($rst_est); 
+					echo "Ocurrió un error al verificar cliente...!";
+				}
+		$row_est = oci_fetch_array($rst_est, OCI_ASSOC);		
+		$estado = $row_est['NOMB_INVE_TIPO_EST'];			
+			
 			echo "<tr bgcolor=#FFFFFF> 
 			   <td height=25  class=date1 bgcolor=#444444><div align=center style='color:#D0910B'>".$row['REFE_INVE_DOC']."</div></td>";
-			   echo "<td bgcolor=#FFFFFF  class=date2><div align=left>".$row['FECH_INVE_DOCU']."</div></td>		  	   
-			   <td bgcolor=#FFFFFF  class=date2><div align=center>".$row['CODI_INVE_CLIE']."</div></td>
+			   echo "<td bgcolor=#FFFFFF  class=date2><div align=left>".$row['FECH_INVE_DOCU1']."</div></td>		  	   
+			   <td bgcolor=#FFFFFF  class=date2><div align=center>".$cliente."</div></td>
 			   <td bgcolor=#FFFFFF  class=date2><div align=left>".$row['COME_INVE_DOCU']."</div></td>		   
 			   <td bgcolor=#FFFFFF  class=date2><div align=center>".$row['IMPO_TOTA_INVE_DOCU']."</div></td>
 			   <td bgcolor=#FFFFFF  class=date2><div align=center>".$row['FECH_INVE_APRUE']."</div></td>
 			   <td bgcolor=#FFFFFF  class=date2><div align=center>".$row['COME_INVE_EST']."</div></td>
-			   <td bgcolor=#FFFFFF  class=date2><div align=center>".$row['CODI_INVE_TIPO_EST']."</div></td>";		   		   		   
+			   <td bgcolor=#FFFFFF  class=date2><div align=center>".$estado."</div></td>";		   		   		   
 			 echo "</tr> \n";
          }										
 	 ?>
