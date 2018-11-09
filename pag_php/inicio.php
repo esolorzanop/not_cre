@@ -132,7 +132,9 @@ color: orange !important;
 				$("#productos").html(responseText);
 			});
 		}	
-
+	
+	
+/*////////////////////////////////detallefactura///////////////////////////////////////////////////////////////////*/	
 	function funIrpag(valor){					
 			var url="detfact.php";
 		
@@ -141,14 +143,22 @@ color: orange !important;
 			});
 		}
 	
-/*////////////////////////////////detallefactura///////////////////////////////////////////////////////////////////*/	
-
 	function limpiardf(){			
 			var url="detfact.php";			
 			
 			$.post(url,{action: 'refrescar'},function (responseText){
 				$("#productos").html(responseText);
 			});
+		}	
+	
+		function grabrarf(valor){
+			var url = "detfact.php";			
+			var come_fac = document.getElementById("come_apdocu");
+			var cod_factura = document.getElementById("cod_factura");
+		
+			$.post(url,{f_est:valor,action: 'fact_esta', come:come_fac.value,cod_factura:cod_factura.value},function (responseText){
+				$("#productos").html(responseText);
+			});		
 		}	
 			
 </script>	

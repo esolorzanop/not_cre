@@ -8,7 +8,45 @@ include("../fun_php/lib.php");
 $con = conectar();
 
 $where = '';
-//$accion = $_REQUEST['action'];
+$accion = $_REQUEST['action'];
+
+if ($accion <> ""){	
+	if ($accion == 'fact_esta'){
+		$fact_esta = $_REQUEST['f_est'];//estado
+		$fact_come = strtoupper($_REQUEST['come']);//comentario
+		$cod_factura = $_REQUEST['cod_factura'];//codigo factura	
+		//echo $accion." ".$fact_esta." ".$fact_come." ".$cod_factura;
+
+		$stid = oci_parse($con, 'update INTER.INVE_DOCUMENTOS_DAT I set fech_inve_aprue = sysdate, CODI_INVE_TIPO_EST = :p_estado, come_inve_est = :p_comentario where I.CODI_INVE_DOCU = :p_cod_fac');		
+		
+							oci_bind_by_name($stid, ':p_estado', $fact_esta);			
+							oci_bind_by_name($stid, ':p_comentario', $fact_come);		
+							oci_bind_by_name($stid, ':p_cod_fac', $cod_factura);
+														
+							$r = oci_execute($stid);
+		
+							if (!$r) {
+									$e = oci_error($stid); 
+									 $mensaje = "Ocurrió un error al intentar CAMBIAR ESTADO...!";
+								}							
+							oci_free_statement($stid);	
+
+		$stid = oci_parse($con, 'insert into INTER.INVE_DOCU_est_log (SELECT I.CODI_ADMI_EMPR_FINA, I.CODI_ADMI_PUNT_VENT, I.CODI_INVE_TIPO_DOCU, I.CODI_INVE_DOCU,I.CODI_INVE_TIPO_EST, I.COME_INVE_EST,I.FECH_INVE_APRUE FROM INTER.INVE_DOCUMENTOS_DAT I WHERE I.CODI_INVE_DOCU = :p_cod_fac)');	
+		
+							oci_bind_by_name($stid, ':p_cod_fac', $cod_factura);
+														
+							$r = oci_execute($stid);
+		
+							if (!$r) {
+									$e = oci_error($stid); 
+									 $mensaje = "Ocurrió un error al intentar GRABAR LOG...!";
+								}							
+							oci_free_statement($stid);		
+		
+							echo "<script>javascript:limpiarf();</script>";
+	}
+	
+}
 
 /*busqueda por numero de facturas*/
 $b_nfacturas = $_REQUEST['b_nfacturas'];
@@ -27,9 +65,9 @@ FROM INTER.INVE_DOCUMENTOS_DAT I
 Where
 CODI_ADMI_ESTA = \'O\' 
 and CODI_ADMI_EMPR_FINA = \'00001\'
- AND CODI_ADMI_PUNT_VENT=\'101\' 
+ AND CODI_ADMI_PUNT_VENT=\'101\'  
  AND CODI_INVE_TIPO_DOCU IN (\'FACTU\',\'REFAC\')'.$where;
- //--AND CODI_INVE_TIPO_EST IN (1,2,3,4)---- LAS QUE DEBE CARGAR DE FAULT
+ //AND CODI_INVE_TIPO_EST IN (1,2,3,4)---- LAS QUE DEBE CARGAR DE FAULT
 //echo $sql."<br>";
 
 	$rst = oci_parse($con, $sql);
@@ -116,6 +154,24 @@ a:active {
 	text-decoration: underline;
 }		
 </style>
+<script>
+function max2(txarea)
+{
+total = 150;
+tam = txarea.value.length;
+str="";
+str=str+tam;
+Digitado2.innerHTML = str;
+Restante2.innerHTML = total - str;
+
+if (tam > total){
+aux = txarea.value;
+txarea.value = aux.substring(0,total);
+Digitado2.innerHTML = total
+Restante2.innerHTML = 0
+}
+}
+</script>
 
   <div id="wrapper" class="animate">
   <div class="container-fluid">      
@@ -135,8 +191,9 @@ a:active {
        TO_CHAR(I.IMPO_NETO_INVE_DOCU, \'FM999,999,999.90\') IMPO_NETO_INVE_DOCU,
        TO_CHAR(I.IMPO_IVA_INVE_DOCU, \'FM999,999,999.90\') IMPO_IVA_INVE_DOCU,
        TO_CHAR(I.IMPO_TOTA_INVE_DOCU, \'FM999,999,999.90\') IMPO_TOTA_INVE_DOCU,
-       I.FECH_INVE_APRUE,
+       TO_CHAR(I.FECH_INVE_APRUE,\'dd/mm/yyyy\') FECH_INVE_APRUE,
        I.COME_INVE_EST,
+	   I.CODI_INVE_TIPO_EST,
        (select  NOMB_INVE_TIPO_EST nomb_esta from INTER.INVE_TIPO_EST_REF WHERE CODI_INVE_TIPO_DOCU = \'FACTU\' AND CODI_INVE_TIPO_EST = I.CODI_INVE_TIPO_EST and est_inve_tipo_est = 1) estado_docu
   FROM INTER.INVE_DOCUMENTOS_DAT I
  WHERE     CODI_ADMI_ESTA = \'O\'
@@ -144,7 +201,8 @@ a:active {
        AND CODI_ADMI_PUNT_VENT = \'101\'
        AND CODI_INVE_TIPO_DOCU IN (\'FACTU\', \'REFAC\')'.$where;
  //--AND CODI_INVE_TIPO_EST IN (1,2,3,4)---- LAS QUE DEBE CARGAR DE FAULT
-//echo $sql."<br>";
+
+	//echo $sql."<br>";
 	
 	$rst = oci_parse($con, $sql);
 	$r = oci_execute($rst);
@@ -163,7 +221,7 @@ a:active {
 <form id="form1" name="form1" method="post" autocomplete="off" class="form-horizontal">
 <fieldset>
 <legend><strong></strong></legend>
-	<input name="cod_factura" id="cod_fatura" type="hidden" value="<?php echo $row['CODI_INVE_DOCU']; ?>">
+	<input name="cod_factura" id="cod_factura" type="hidden" value="<?php echo $row['CODI_INVE_DOCU']; ?>">
 <div class="form-row">	
 	<div class="form-group col-md-6">
 		<label for="n_facturas"><strong>Factura No.</strong></label>
@@ -173,7 +231,10 @@ a:active {
 		<label for="fec_facturas"><strong>Fecha Documento</strong></label>
 	   <input id="fec_facturas" name="fec_facturas" type="text" placeholder="Fecha Documento" class="form-control" style="text-align: center;" <?php if ($row['FECH_INVE_DOCU'] <> ''){ ?> readonly value="<?php echo $row['FECH_INVE_DOCU']; ?>" <?php } ?> >    	
 	</div>	
-	
+	<div class="form-group col-md-3">
+		<label for="fec_facturas_ap"><strong>Fecha Aprobación Solicitud</strong></label>
+	   <input id="fec_facturas_ap" name="fec_facturas_ap" type="text" placeholder="__/__/____" class="form-control" style="text-align: center;" readonly <?php if ($row['FECH_INVE_APRUE'] <> ''){ ?> value="<?php echo $row['FECH_INVE_APRUE']; ?>" <?php } ?> >    	
+	</div>	
 </div>	
 <div class="form-row">	
 	<div class="form-group col-md-9">
@@ -211,29 +272,89 @@ a:active {
 <div class="form-row">		
 	<div class="form-group col-md-8">
 		 <label for="come_docu"><strong>Comentario Pre-aprobación Documento</strong></label>
-		<textarea class="form-control" id="come_apdocu" name="come_apdocu" rows="4" style="text-align: justify;" ></textarea>
+		<textarea class="form-control" id="come_apdocu" name="come_apdocu" rows="4" style="text-align: justify;" onKeyUp="max2(this)" onKeyPress="max2(this)" <?php if ($row['COME_INVE_EST'] <> ''){ ?> readonly<?php } ?> ><?php echo $row['COME_INVE_EST']; ?></textarea>
+		<div align="center"><strong><font id="Digitado2" color="#429F00">0</font><font color="#444444"> Caracteres digitados / Restan </font><font id="Restante2" color="#429F00">150</font></strong></div>
 	  </div>	
 <div class="form-group col-md-1"></div> 	
 	<div class="form-group col-md-1">		  		  
-		  <button id="b_back" name="b_back" title="Regresar a Listado de Facturas" class="btn btn-default btn-lg" onClick="javascript:limpiar();">
+		  <button id="b_back" name="b_back" title="Regresar a Listado de Facturas" class="btn btn-default btn-lg btn-warning" onClick="javascript:limpiarf();">
 			  	<i data-feather="arrow-left"></i><script>feather.replace();</script>
 			  </button> 			
-	</div>		
-	<div class="form-group col-md-1">		  		  
-			  <button id="b_earchivo" name="b_earchivo" title="Aprobar Solicitud" class="btn btn-default btn-lg" onclick="window.location='#'">
+	</div>
+	<?php if (($_SESSION['TIPO_USU'] == 2)||($_SESSION['TIPO_USU'] == 3)){ 
+					$mensaje_ne = "Negar Emisión de NC";					
+					
+				if ($_SESSION['TIPO_USU'] == 2){
+					if ($row['COME_INVE_EST'] <> ''){ 
+						$oculto = 'hidden';
+					}else{
+						$oculto = '';
+					}
+					$mensaje_ap = "Pre-Aprobar Emisión de NC";
+				}else{
+					if ($row['COME_INVE_EST'] == ''){ 
+						$oculto = 'hidden';
+					}else{
+						$oculto = '';
+					}					
+					$mensaje_ap = "Aprobar Emisión de NC";
+					
+					if (($row['CODI_INVE_TIPO_EST'] == '3')||($row['CODI_INVE_TIPO_EST'] == '4')||($row['CODI_INVE_TIPO_EST'] == '5')){ //emision de nota de credito negada o preaprobada
+						$oculto = 'hidden';					
+					}
+					
+				}
+	?>
+	<div class="form-group col-md-1" <?php echo $oculto; ?>	>	  		  
+			  <button id="b_aprobar" name="b_aprobar" title="<?php echo $mensaje_ap; ?>" class="btn btn-default btn-lg btn-warning">
 					<i data-feather="check"></i><script>feather.replace();</script>
 				  </button> 						  		  
 		</div>			
-	<div class="form-group col-md-1">		  		  
-			  <button id="b_limpiar" name="b_limpiar" title="Negar Solicitud" class="btn btn-default btn-lg">
+	<div class="form-group col-md-1"<?php echo $oculto; ?>	>	  		  
+			  <button id="b_negar" name="b_negar" title="<?php echo $mensaje_ne; ?>" class="btn btn-default btn-lg btn-warning">
 					<i data-feather="x"></i><script>feather.replace();</script>
 				  </button> 					
 		</div>				
+	<?php } ?>
 </div>		
 	
 </fieldset>
 </form>					  
-<!------------------------------------------------------------------------------>
+<script>
+$("#b_aprobar").click(function() {  
+	if ($("#come_apdocu").val()!=""){
+<?php
+if (($_SESSION['TIPO_USU'] == 2)||($_SESSION['TIPO_USU'] == 3)){ 
+				if ($_SESSION['TIPO_USU'] == 2){
+?>					
+			grabrarf(2);	//preaprobada emision de nota de credito
+<?php		
+				}else{
+?>					
+			grabrarf(3);	//aprobada emision de nota de credito
+<?php		
+				}
+}
+	?>				
+	}else{
+		alert('Debe escribir su comentario, para Pre-Aprobar la emisión del documento.');
+		$("#come_apdocu").focus();
+	}	
+});	
+$("#b_negar").click(function() {  
+	if ($("#come_apdocu").val()!=""){
+		grabrarf(4);	//emision de nota de credito negada o no preaprobada
+	}else{
+		alert('Debe escribir su comentario, para Negar la emisión del documento.');
+		$("#come_apdocu").focus();
+	}	
+});		
+$("#form1").submit(function(e){
+    //return false;
+	e.preventDefault();
+});		
+</script>				
+<!------------------------------------------------------------------------------>				
 <?php 
 }
 ?>

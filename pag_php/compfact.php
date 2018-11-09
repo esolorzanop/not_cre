@@ -35,7 +35,8 @@ $b_estadof = isset($_REQUEST['b_estadof']) ? $_REQUEST['b_estadof']:$_SESSION['b
 		$where_ef = " and CODI_INVE_TIPO_EST = ".$b_estadof;
 		$_SESSION['b_estadof'] = $b_estadof;
 	}else{
-		$where_ef = $b_estadof = $_SESSION['b_estadof'] = '';
+		$where_ef = " and CODI_INVE_TIPO_EST in (1,2,3)";
+		$b_estadof = $_SESSION['b_estadof'] = '';
 		 }
 /*********************************/
 
@@ -55,8 +56,9 @@ $b_hfecha = isset($_REQUEST['b_hfecha']) ? $_REQUEST['b_hfecha']:$_SESSION['b_hf
 
 if ($accion == 'refrescar'){
 	$b_nfacturas = $b_cliente = $cod_cliente = $b_estadof = $b_dfecha = $b_hfecha = '';
-	$where_nf = $where_cl = $where_ef = $where_fec = '';
+	$where_nf = $where_cl = $where_fec = '';	
 	$_SESSION['cod_cliente'] = $_SESSION['b_cliente'] = $_SESSION['b_estadof'] = $_SESSION['b_dfecha'] = $_SESSION['b_hfecha'] = '';	
+	$where_ef = " and CODI_INVE_TIPO_EST in (1,2,3)";
 }
 
 $where = $where_nf.$where_cl.$where_ef.$where_fec;
@@ -77,7 +79,7 @@ $sql = 'SELECT count(1) total FROM INTER.INVE_DOCUMENTOS_DAT Where CODI_ADMI_EST
 
 if($row['TOTAL'] == 0){	
 	//echo "<script>alert('Su busqueda no tiene resultados, intentelo nuevamente...!');limpiarf();</script>"; 
-	echo "<script>alert('Su busqueda no tiene resultados que mostrar, intentelo nuevamente en pocos minutos o espere notificacion vía e-mail...!');</script>"; 	
+	echo "<script>alert('Su busqueda no tiene resultados que mostrar, intentelo nuevamente en pocos minutos o espere notificacion vía e-mail...!');limpiarf();</script>"; 	
 }else{ 
 	if(isset($_POST['limite'])){
 		$limit = $_POST['limite'];
@@ -530,7 +532,9 @@ $("#b_nfacturas").keypress(function(e) {
 });	
 
 $("#b_busqueda").click(function() {  
-	if (($("#b_nfacturas").val()!="")||($("#cod_cliente").val()!="")||($('#b_estadof').val()!='-1000')||($('#b_estadof').val()!='')||(($("#b_dfecha").val()!="__/__/____")&&($("#b_hfecha").val()!="__/__/____"))){
+	//alert('click');
+	if (($("#b_nfacturas").val()!="")||($("#cod_cliente").val()!="")||($('#b_estadof').val()!='-1000')||(($("#b_dfecha").val()!="__/__/____")&&($("#b_hfecha").val()!="__/__/____"))){
+		//alert('bus');
 		buscarf();	
 	}else{
 		alert('Elegir uno o más criterios de busqueda...');

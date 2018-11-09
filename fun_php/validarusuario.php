@@ -10,10 +10,12 @@ $clave=isset($_REQUEST["clave"]) ? $_REQUEST["clave"]:NULL;
 $con = conectar();
 
 
-$stid = oci_parse($con, 'begin SP_CHK_LOGIN_NC(:p_usuario,:p_clave,:p_mensaje); end;');
+$stid = oci_parse($con, 'begin SP_CHK_LOGIN_NC(:p_usuario,:p_clave,:p_tipo_usu,:p_mensaje); end;');
 		
 							oci_bind_by_name($stid, ':p_usuario', $login);	
-							oci_bind_by_name($stid, ':p_clave', $clave);																					oci_bind_by_name($stid, ':p_mensaje', $mensaje,200);
+							oci_bind_by_name($stid, ':p_clave', $clave);
+							oci_bind_by_name($stid, ':p_tipo_usu', $tipo_usu);
+							oci_bind_by_name($stid, ':p_mensaje', $mensaje,200);
 														
 							$r = oci_execute($stid);
 		
@@ -37,6 +39,7 @@ $stid = oci_parse($con, 'begin SP_CHK_LOGIN_NC(:p_usuario,:p_clave,:p_mensaje); 
 	if($mensaje=='pasa') {
 		$URL="../index.php?num=1";
 		$_SESSION['LOGIN'] = $login;		
+		$_SESSION['TIPO_USU'] = $tipo_usu;
 		//$_SESSION['LOGIN'] = $login;		
 	}
 	else{
