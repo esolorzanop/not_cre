@@ -37,6 +37,8 @@ $b_estadof = isset($_REQUEST['b_estadof']) ? $_REQUEST['b_estadof']:$_SESSION['b
 	}else{
 		$where_ef = " and CODI_INVE_TIPO_EST in (1,2,3)";
 		$b_estadof = $_SESSION['b_estadof'] = '';
+		if($b_nfacturas<>'')
+		{$where_ef = '';}
 		 }
 /*********************************/
 
@@ -281,13 +283,13 @@ onShow:function( ct ){
 	
 	
 	<div class="form-group col-md-2">		  		  
-		  <button id="b_busqueda" name="b_busqueda" title="Buscar Datos" class="btn btn-default btn-lg">
+		  <button id="b_busqueda" name="b_busqueda" title="Buscar Datos" class="btn btn-default btn-lg btn-warning">
 			  	<i data-feather="search"></i><script>feather.replace();</script>
 			  </button> 			
-		  <button id="b_earchivo" name="b_earchivo" title="Enviar Datos Hacia Archivo Excel" class="btn btn-default btn-lg" onclick="window.location='../fun_php/reporte_001.php'">
+		  <button id="b_earchivo" name="b_earchivo" title="Enviar Datos Hacia Archivo Excel" class="btn btn-default btn-lg btn-warning" onclick="window.location='../fun_php/reporte_001.php'">
 			  	<i data-feather="file-text"></i><script>feather.replace();</script>
 			  </button> 						  		  
-		  <button id="b_limpiar" name="b_limpiar" title="Refrescar Página" class="btn btn-default btn-lg">
+		  <button id="b_limpiar" name="b_limpiar" title="Refrescar Página" class="btn btn-default btn-lg btn-warning">
 			  	<i data-feather="refresh-cw"></i><script>feather.replace();</script>
 			  </button> 					
 	</div>		
@@ -322,6 +324,7 @@ onShow:function( ct ){
 	$rst = oci_parse($con, $sql);
 	oci_bind_by_name($rst, ':n_page_number', $n_page_number);	
 	oci_bind_by_name($rst, ':n_page_size', $n_page_size);
+	
 	//echo $sql;
 	//echo $_SESSION['sql_rpt'];
 	
@@ -340,7 +343,7 @@ onShow:function( ct ){
 	$productos="";
 	while($row = oci_fetch_array($rst, OCI_ASSOC))
 	{
-		$productos[$row['ROW_NUMBER']]['CODIGO_FAC'] = $row['CODI_INVE_DOCU,'];								
+		$productos[$row['ROW_NUMBER']]['CODIGO_FAC'] = $row['CODI_INVE_DOCU'];								
 		$productos[$row['ROW_NUMBER']]['NUMERO_FAC'] = $row['REFE_INVE_DOC'];	
 		$productos[$row['ROW_NUMBER']]['FECHA_FAC'] = $row['FECH_INVE_DOCU1'];	
 		
@@ -360,7 +363,8 @@ onShow:function( ct ){
 		$productos[$row['ROW_NUMBER']]['DETALLE_FAC'] = $row['COME_INVE_DOCU'];			
 		$productos[$row['ROW_NUMBER']]['TOTAL_FACTURA'] = $row['IMPO_TOTA_INVE_DOCU'];						
 		$productos[$row['ROW_NUMBER']]['FECHA_APNC'] = $row['FECH_INVE_APRUE'];						
-		$productos[$row['ROW_NUMBER']]['DETALLE_APNC'] = $row['COME_INVE_EST'];						
+		$productos[$row['ROW_NUMBER']]['DETALLE_APNC'] = $row['COME_INVE_EST'];
+		$productos[$row['ROW_NUMBER']]['COD_ESTADO'] = $row['CODI_INVE_TIPO_EST'];
 		
 		$sql_est = 'select NOMB_INVE_TIPO_EST from INTER.INVE_TIPO_EST_REF WHERE CODI_INVE_TIPO_DOCU = \'FACTU\' AND CODI_INVE_TIPO_EST = '.$row['CODI_INVE_TIPO_EST'];
 		//echo $sql_cl;		  
@@ -393,16 +397,44 @@ onShow:function( ct ){
 								echo "<th scope=\"row\"><a href=\"#\" onclick=\"javascript:funIrpag('$value');\">".$value."</a></th>";
 								break;																						
 
-								case "DETALLE_FAC":
-								echo "<td align=\"justify\">".$value."</td>";
+								case "COD_ESTADO":
+										switch ($value){
+											case 1:
+												$clase = 'class = "badge  badge-pill badge-danger"';
+											break;
+												
+											case 2:
+												$clase = 'class = "badge  badge-pill badge-warning"';
+											break;
+												
+											case 3:
+												$clase = 'class = "badge  badge-pill badge-success"';
+											break;
+												
+											case 4:
+												$clase = 'class = "badge  badge-pill badge-dark"';
+											break;
+												
+											case 5:
+												$clase = 'class = "badge  badge-pill badge-info"';
+											break;	
+												
+											default:
+												$clase = '';
+											break;												
+										}
 								break;	
 
 								case "DETALLE_FAC":
 								echo "<td align=\"justify\">".$value."</td>";
 								break;										
+
+								case "ESTADO_APNC":
+								echo "<td align=\"justify\" ".$clase.">".$value."</td>";
+								break;																	
 									
 								default:
-								echo "<td>$value</td>";
+								echo "<td>".$value."</td>";
 								break;								
 							}
 					

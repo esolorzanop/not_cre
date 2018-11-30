@@ -16,17 +16,17 @@ if ($accion <> ""){
 		$fact_come = strtoupper($_REQUEST['come']);//comentario
 		$cod_factura = $_REQUEST['cod_factura'];//codigo factura	
 		
-	//	echo $accion." ".$fact_esta." ".$fact_come." ".$cod_factura;
+		echo $accion." ".$fact_esta." ".$fact_come." ".$cod_factura;
 			
 		if ($fact_esta <> 0){
-			$sql = 'update INTER.INVE_DOCUMENTOS_DAT I set fech_inve_aprue = sysdate, CODI_INVE_TIPO_EST = :p_estado, come_inve_est = :p_comentario where I.CODI_INVE_DOCU = :p_cod_fac AND CODI_INVE_TIPO_DOCU IN (\'FACTU\')';		
+			$sql = 'update INTER.INVE_DOCUMENTOS_DAT I set fech_inve_aprue = sysdate, CODI_INVE_TIPO_EST = :p_estado, come_inve_est = :p_comentario where I.CODI_INVE_DOCU = :p_cod_fac AND CODI_INVE_TIPO_DOCU IN (\'NCCLI\')';		
 			
-			$sql_l = 'insert into INTER.INVE_DOCU_est_log (SELECT I.CODI_ADMI_EMPR_FINA, I.CODI_ADMI_PUNT_VENT, I.CODI_INVE_TIPO_DOCU, I.CODI_INVE_DOCU,I.CODI_INVE_TIPO_EST, I.COME_INVE_EST,I.FECH_INVE_APRUE FROM INTER.INVE_DOCUMENTOS_DAT I WHERE I.CODI_INVE_DOCU = :p_cod_fac AND CODI_INVE_TIPO_DOCU IN (\'FACTU\'))';
+			$sql_l = 'insert into INTER.INVE_DOCU_est_log (SELECT I.CODI_ADMI_EMPR_FINA, I.CODI_ADMI_PUNT_VENT, I.CODI_INVE_TIPO_DOCU, I.CODI_INVE_DOCU,I.CODI_INVE_TIPO_EST, I.COME_INVE_EST,I.FECH_INVE_APRUE FROM INTER.INVE_DOCUMENTOS_DAT I WHERE I.CODI_INVE_DOCU = :p_cod_fac AND CODI_INVE_TIPO_DOCU IN (\'NCCLI\'))';
 				
 		}else{//cancelar solicitud
-		$sql = 'update INTER.INVE_DOCUMENTOS_DAT I set fech_inve_aprue = null, CODI_INVE_TIPO_EST = :p_estado, come_inve_est = null where I.CODI_INVE_DOCU = :p_cod_fac AND CODI_INVE_TIPO_DOCU IN (\'FACTU\')';					
+		$sql = 'update INTER.INVE_DOCUMENTOS_DAT I set fech_inve_aprue = null, CODI_INVE_TIPO_EST = :p_estado, come_inve_est = null where I.CODI_INVE_DOCU = :p_cod_fac AND CODI_INVE_TIPO_DOCU IN (\'NCCLI\')';					
 		
-		$sql_l = 'insert into INTER.INVE_DOCU_est_log (SELECT I.CODI_ADMI_EMPR_FINA, I.CODI_ADMI_PUNT_VENT, I.CODI_INVE_TIPO_DOCU, codi_inve_docu, codi_inve_tipo_est , \'SOLICITUD DE NC CANCELADA\' COME_INVE_EST, SYSDATE FECH_INVE_APRUE FROM INTER.INVE_DOCUMENTOS_DAT I WHERE I.CODI_INVE_DOCU = :p_cod_fac AND CODI_INVE_TIPO_DOCU IN (\'FACTU\'))';	
+		$sql_l = 'insert into INTER.INVE_DOCU_est_log (SELECT I.CODI_ADMI_EMPR_FINA, I.CODI_ADMI_PUNT_VENT, I.CODI_INVE_TIPO_DOCU, codi_inve_docu, codi_inve_tipo_est , \'SOLICITUD DE NC CANCELADA\' COME_INVE_EST, SYSDATE FECH_INVE_APRUE FROM INTER.INVE_DOCUMENTOS_DAT I WHERE I.CODI_INVE_DOCU = :p_cod_fac AND CODI_INVE_TIPO_DOCU IN (\'NCCLI\'))';	
 		}
 	
 		$stid = oci_parse($con, $sql);		
@@ -58,7 +58,7 @@ if ($accion <> ""){
 								}							
 							oci_free_statement($stid);		
 			
-		echo "<script>javascript:limpiarf();</script>";
+		echo "<script>javascript:limpiarNC();</script>";
 	}
 	
 }
@@ -81,7 +81,7 @@ Where
 CODI_ADMI_ESTA = \'O\' 
 and CODI_ADMI_EMPR_FINA = \'00001\'
  AND CODI_ADMI_PUNT_VENT=\'101\'  
- AND CODI_INVE_TIPO_DOCU IN (\'FACTU\',\'REFAC\')'.$where;
+ AND CODI_INVE_TIPO_DOCU IN (\'NCCLI\')'.$where;
  //AND CODI_INVE_TIPO_EST IN (1,2,3,4)---- LAS QUE DEBE CARGAR DE FAULT
 //echo $sql."<br>";
 
@@ -96,7 +96,7 @@ and CODI_ADMI_EMPR_FINA = \'00001\'
 	$row = oci_fetch_array($rst, OCI_ASSOC);	
 
 if($row['TOTAL'] == 0){	
-	echo "<script>alert('Su busqueda no tiene resultados, intentelo nuevamente...!');limpiardf();</script>"; 
+	echo "<script>alert('Su busqueda no tiene resultados, intentelo nuevamente...!');limpiarNC();</script>"; 
 	//echo "<script>alert('Su busqueda no tiene resultados, intentelo nuevamente...!');</script>"; 	
 }else{ 
 ?>
@@ -209,12 +209,12 @@ Restante2.innerHTML = 0
        TO_CHAR(I.FECH_INVE_APRUE,\'dd/mm/yyyy\') FECH_INVE_APRUE,
        I.COME_INVE_EST,
 	   I.CODI_INVE_TIPO_EST,
-       (select  NOMB_INVE_TIPO_EST nomb_esta from INTER.INVE_TIPO_EST_REF WHERE CODI_INVE_TIPO_DOCU = \'FACTU\' AND CODI_INVE_TIPO_EST = I.CODI_INVE_TIPO_EST and est_inve_tipo_est = 1) estado_docu
+       (select  NOMB_INVE_TIPO_EST nomb_esta from INTER.INVE_TIPO_EST_REF WHERE CODI_INVE_TIPO_DOCU = \'NCCLI\' AND CODI_INVE_TIPO_EST = I.CODI_INVE_TIPO_EST and est_inve_tipo_est = 1) estado_docu
   FROM INTER.INVE_DOCUMENTOS_DAT I
  WHERE     CODI_ADMI_ESTA = \'O\'
        AND CODI_ADMI_EMPR_FINA = \'00001\'
        AND CODI_ADMI_PUNT_VENT = \'101\'
-       AND CODI_INVE_TIPO_DOCU IN (\'FACTU\', \'REFAC\')'.$where;
+       AND CODI_INVE_TIPO_DOCU IN (\'NCCLI\')'.$where;
  //--AND CODI_INVE_TIPO_EST IN (1,2,3,4)---- LAS QUE DEBE CARGAR DE FAULT
 
 	//echo $sql."<br>";
@@ -232,14 +232,15 @@ Restante2.innerHTML = 0
 				
 ?>								
 <!------------------------------------------------------------------------------>
-				<center><h4><strong>DETALLE FACTURA QUE SOLICITAN EMITIR NOTA DE CRÉDITO</strong></h4></center>
+				<center>
+				  <h4><strong>DETALLE DE NOTA DE CRÉDITO</strong></h4></center>
 <form id="form1" name="form1" method="post" autocomplete="off" class="form-horizontal">
 <fieldset>
 <legend><strong></strong></legend>
 	<input name="cod_factura" id="cod_factura" type="hidden" value="<?php echo $row['CODI_INVE_DOCU']; ?>">
 <div class="form-row">	
 	<div class="form-group col-md-6">
-		<label for="n_facturas"><strong>Factura No.</strong></label>
+		<label for="n_facturas"><strong>Documento No.</strong></label>
 	   <input id="n_facturas" name="n_facturas" type="text" placeholder="Número de Factura" class="form-control" style="text-align: center;" <?php if ($row['REFE_INVE_DOC'] <> ''){ ?> readonly value="<?php echo $row['REFE_INVE_DOC']; ?>" <?php } ?> >    	
 	</div>
 	<div class="form-group col-md-3">
@@ -247,7 +248,7 @@ Restante2.innerHTML = 0
 	   <input id="fec_facturas" name="fec_facturas" type="text" placeholder="Fecha Documento" class="form-control" style="text-align: center;" <?php if ($row['FECH_INVE_DOCU'] <> ''){ ?> readonly value="<?php echo $row['FECH_INVE_DOCU']; ?>" <?php } ?> >    	
 	</div>	
 	<div class="form-group col-md-3">
-		<label for="fec_facturas_ap"><strong>Fecha Aprobación Solicitud</strong></label>
+		<label for="fec_facturas_ap"><strong>Fecha Justificación</strong></label>
 	   <input id="fec_facturas_ap" name="fec_facturas_ap" type="text" placeholder="__/__/____" class="form-control" style="text-align: center;" readonly <?php if ($row['FECH_INVE_APRUE'] <> ''){ ?> value="<?php echo $row['FECH_INVE_APRUE']; ?>" <?php } ?> >    	
 	</div>	
 </div>	
@@ -264,7 +265,7 @@ Restante2.innerHTML = 0
 	<hr>
 <?php 
 										switch ($row['CODI_INVE_TIPO_EST']){
-											case 1:
+											case 0:
 												$clase = ' badge  badge-pill badge-danger';
 											break;
 												
@@ -272,18 +273,18 @@ Restante2.innerHTML = 0
 												$clase = ' badge  badge-pill badge-warning';
 											break;
 												
-											case 3:
+											case 1:
 												$clase = ' badge  badge-pill badge-success"';
 											break;
 												
-											case 4:
+											/*case 4:
 												$clase = ' badge  badge-pill badge-dark"';
 											break;
 												
 											case 5:
 												$clase = ' badge  badge-pill badge-info"';
 											break;	
-												
+												*/
 											default:
 												$clase = '';
 											break;												
@@ -304,39 +305,39 @@ Restante2.innerHTML = 0
 	  </div>
 	<div class="form-group col-md-1"></div>
 	<div class="form-vertical col-md-3">		
-		<label for="val_facturas"><strong>Valor Facturado</strong></label>
+		<label for="val_facturas"><strong>Valor Documento</strong></label>
 	   <input id="val_facturas" name="val_facturas" type="text" placeholder="Valor Facturado" class="form-control" style="text-align: right;" <?php if ($row['IMPO_NETO_INVE_DOCU'] <> ''){ ?> readonly value="<?php echo $row['IMPO_NETO_INVE_DOCU']; ?>" <?php } ?> >    		
-		   <label for="iva_facturas"><strong>IVA Facturado</strong></label>
+		   <label for="iva_facturas"><strong>IVA Documento</strong></label>
 	   <input id="iva_facturas" name="iva_facturas" type="text" placeholder="Valor Facturado" class="form-control" style="text-align: right;" <?php if ($row['IMPO_NETO_INVE_DOCU'] <> ''){ ?> readonly value="<?php echo $row['IMPO_IVA_INVE_DOCU']; ?>" <?php } ?> >    		
-		   <label for="tot_facturas"><strong>ToTal Facturado</strong></label>
+		   <label for="tot_facturas"><strong>Valor Total </strong></label>
 	   <input id="tot_facturas" name="tot_facturas" type="text" placeholder="Valor Facturado" class="form-control" style="text-align: right;" <?php if ($row['IMPO_TOTA_INVE_DOCU'] <> ''){ ?> readonly value="<?php echo $row['IMPO_TOTA_INVE_DOCU']; ?>" <?php } ?> >    				
 	</div>	
 </div>	
 	<hr>
 <div class="form-row">		
 	<div class="form-group col-md-8">
-		 <label for="come_docu"><strong>Comentario Pre-aprobación Documento</strong></label>
+		 <label for="come_docu"><strong>Comentario Justifiación Documento No Re-Facturado</strong></label>
 		<textarea class="form-control" id="come_apdocu" name="come_apdocu" rows="4" style="text-align: justify;" onKeyUp="max2(this)" onKeyPress="max2(this)" <?php if ($row['COME_INVE_EST'] <> ''){ ?> readonly<?php } ?> ><?php echo $row['COME_INVE_EST']; ?></textarea>
 		<div align="center"><strong><font id="Digitado2" color="#429F00">0</font><font color="#444444"> Caracteres digitados / Restan </font><font id="Restante2" color="#429F00">150</font></strong></div>
 	  </div>	
  	
 	<div class="form-group col-md-1">		  		  
-		  <button id="b_back" name="b_back" title="Regresar a Listado de Facturas" class="btn btn-default btn-lg btn-warning" onClick="javascript:limpiarf();">
+		  <button id="b_back" name="b_back" title="Regresar a Listado de Notas de Crédito" class="btn btn-default btn-lg btn-warning" onClick="javascript:limpiarNC();">
 			  	<i data-feather="arrow-left"></i><script>feather.replace();</script>
 			  </button> 			
 	</div>
 	<?php if (($_SESSION['TIPO_USU'] == 2)||($_SESSION['TIPO_USU'] == 3)){ 
-					$mensaje_ne = "Negar Emisión de NC";					
-					$oculto2 = '';
+				//	$mensaje_ne = "Negar Emisión de NC";					
+					//$oculto2 = '';
 					
 				if ($_SESSION['TIPO_USU'] == 2){
-					if ($row['COME_INVE_EST'] <> ''){ 
+					if (($row['COME_INVE_EST'] <> '')||($row['CODI_INVE_TIPO_EST']<>0)){ 
 						$oculto = 'hidden';
 					}else{
 						$oculto = '';
 					}
-					$mensaje_ap = "Pre-Aprobar Emisión de NC";
-				}else{
+					$mensaje_ap = "Justificar NC no Re-Facturada";
+				}/*else{
 					if ($row['COME_INVE_EST'] == ''){ 
 						$oculto = 'hidden';
 					}else{
@@ -348,7 +349,7 @@ Restante2.innerHTML = 0
 						$oculto = 'hidden';
 						if ($row['CODI_INVE_TIPO_EST'] == '5')
 						{$oculto2 = 'hidden';}
-					}
+					}*/
 					
 				}
 	?>
@@ -357,18 +358,18 @@ Restante2.innerHTML = 0
 					<i data-feather="check"></i><script>feather.replace();</script>
 				  </button> 						  		  
 		</div>			
-	<div class="form-group col-md-1"<?php echo $oculto; ?>	>	  		  
-			  <button id="b_negar" name="b_negar" title="<?php echo $mensaje_ne; ?>" class="btn btn-default btn-lg btn-warning">
+	<!--<div class="form-group col-md-1"<?php// echo $oculto; ?>	>	  		  
+			  <button id="b_negar" name="b_negar" title="<?php //echo $mensaje_ne; ?>" class="btn btn-default btn-lg btn-warning">
 					<i data-feather="x"></i><script>feather.replace();</script>
 				  </button> 					
 		</div>
-	<div class="form-group col-md-1"<?php echo $oculto2; ?>	>	  		  
+	<div class="form-group col-md-1"<?php //echo $oculto2; ?>	>	  		  
 			  <button id="b_cancelar" name="b_cancelar" title="Cancelar Solicitud de NC" class="btn btn-default btn-lg btn-warning">
 					<i data-feather="x-circle"></i><script>feather.replace();</script>
 				  </button> 					
-		</div>				
+		</div>				-->
 	
-	<?php } ?>
+	<?php// } ?>
 </div>		
 	
 </fieldset>
@@ -380,29 +381,25 @@ $("#b_aprobar").click(function() {
 if (($_SESSION['TIPO_USU'] == 2)||($_SESSION['TIPO_USU'] == 3)){ 
 				if ($_SESSION['TIPO_USU'] == 2){
 ?>					
-			grabrarf(2);	//preaprobada emision de nota de credito
-<?php		
-				}else{
-?>					
-			grabrarf(3);	//aprobada emision de nota de credito
+			grabrarNC(2);	//preaprobada emision de nota de credito
 <?php		
 				}
 }
 	?>				
 	}else{
-		alert('Debe escribir su comentario, para Pre-Aprobar la emisión del documento.');
+		alert('Debe escribir su comentario, para poder Justificar la NC no Re-Facturada.');
 		$("#come_apdocu").focus();
 	}	
 });	
-$("#b_negar").click(function() {  
+/*$("#b_negar").click(function() {  
 	if ($("#come_apdocu").val()!=""){
 		grabrarf(4);	//emision de nota de credito negada o no preaprobada
 	}else{
 		alert('Debe escribir su comentario, para Negar la emisión del documento.');
 		$("#come_apdocu").focus();
 	}	
-});
-$("#b_cancelar").click(function() {  
+});*/
+/*$("#b_cancelar").click(function() {  
 	alert('Atención! se cancela la solicitud del documento.');
 	grabrarf(0);	//cancelar solicitud de NC
 	/*if ($("#come_apdocu").val()!=""){
@@ -410,8 +407,8 @@ $("#b_cancelar").click(function() {
 	}else{
 		alert('Debe escribir su comentario, para cancelar la solicitud del documento.');
 		$("#come_apdocu").focus();
-	}*/	
-});		
+	}
+});	*/	
 $("#form1").submit(function(e){
     //return false;
 	e.preventDefault();

@@ -26,11 +26,11 @@ html, body {
 	
 /*personalizar menu */
 .navbar-dark .navbar-nav .nav-link {
-color: orange !important;
+color: #E0A800 !important;
 }
 
 .navbar-dark .navbar-nav .active>.nav-link  {
- color: orange !important;
+ color: #E0A800 !important;
  text-decoration: underline;
 }
 
@@ -61,7 +61,7 @@ color: orange !important;
 		  <a class="nav-link" href="javascript: void(0);" onClick="javascript:cargarproductos(1);"><strong>ADMINISTRACIÓN DE FACTURAS</strong></a>
 	  </li>
       <li class="nav-item">
-		  <a class="nav-link" href="javascript: void(0);" onClick="javascript:cargarproductos1(1);"><strong>ADMINISTRACIÓN DE NOTAS DE CRÉDITO</strong></a>
+		  <a class="nav-link" href="javascript: void(0);" onClick="javascript:cargarproductosNC(1);"><strong>ADMINISTRACIÓN DE NOTAS DE CRÉDITO</strong></a>
 	  </li>
       <li class="nav-item">
 		  <a class="nav-link" href="javascript: void(0);" onClick="javascript:window.location.href='../fun_php/salir.php'"><strong>SALIR</strong></a>
@@ -96,13 +96,6 @@ color: orange !important;
 				$("#productos").html(responseText);
 			});
 		}
-
-		function cargarproductos1(limite){
-			var url="compnotc.php";
-			$.post(url,{limite: limite},function (responseText){
-				$("#productos").html(responseText);
-			});
-		}	
 
 		function cargarusuarios(){
 			var url="creausu.php";
@@ -160,7 +153,55 @@ color: orange !important;
 				$("#productos").html(responseText);
 			});		
 		}	
+
+	/*//////////////////////////////////////listado NC ////////////////////////////////////////////////////////////////////////////*/
+	function limpiarNC(){			
+			var url="compnotc.php";			
 			
+			$.post(url,{action: 'refrescar'},function (responseText){
+				$("#productos").html(responseText);
+			});
+		}
+
+	function buscarNC(){			
+			var url="compnotc.php";
+			var b_nfacturas = document.getElementById("b_nfacturas");
+			var cod_cliente = document.getElementById("cod_cliente");
+			var b_cliente = document.getElementById("b_cliente");
+			var b_dfecha = document.getElementById("b_dfecha");
+			var b_hfecha = document.getElementById("b_hfecha");
+			var b_estadof = document.getElementById("b_estadof");
+			
+			$.post(url,{action: 'buscar', b_nfacturas: b_nfacturas.value,cod_cliente: cod_cliente.value, b_cliente: b_cliente.value, b_dfecha: b_dfecha.value, b_hfecha: b_hfecha.value,b_estadof: b_estadof.value},function (responseText){
+				$("#productos").html(responseText);
+			});
+		}	
+	
+		function cargarproductosNC(limite){
+			var url="compnotc.php";
+			$.post(url,{limite: limite},function (responseText){
+				$("#productos").html(responseText);
+			});
+		}	
+	
+	function funIrpagNC(valor){					
+			var url="detnotc.php";
+		
+			$.post(url,{b_nfacturas:valor},function (responseText){
+				$("#productos").html(responseText);
+			});
+		}
+	
+		function grabrarNC(valor){
+			var url = "detnotc.php";			
+			var come_fac = document.getElementById("come_apdocu");
+			var cod_factura = document.getElementById("cod_factura");
+		
+			$.post(url,{f_est:valor,action: 'fact_esta', come:come_fac.value,cod_factura:cod_factura.value},function (responseText){
+				$("#productos").html(responseText);
+			});		
+		}	
+	
 </script>	
 </body>
 </html>
