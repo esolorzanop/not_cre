@@ -16,15 +16,15 @@ if ($accion <> ""){
 		$fact_come = strtoupper($_REQUEST['come']);//comentario
 		$cod_factura = $_REQUEST['cod_factura'];//codigo factura	
 		
-	//	echo $accion." ".$fact_esta." ".$fact_come." ".$cod_factura;
+		echo $accion." ".$fact_esta." ".$fact_come." ".$cod_factura;
 			
 		if ($fact_esta <> 0){
-			$sql = 'update INTER.INVE_DOCUMENTOS_DAT I set fech_inve_aprue = sysdate, CODI_INVE_TIPO_EST = :p_estado, come_inve_est = :p_comentario where I.CODI_INVE_DOCU = :p_cod_fac AND CODI_INVE_TIPO_DOCU IN (\'FACTU\')';		
+			$sql = 'update INTER.INVE_DOCUMENTOS_DAT I set fech_inve_aprue = sysdate, CODI_INVE_TIPO_EST = :p_estado, come_inve_est = :p_comentario where I.CODI_INVE_DOCU = :p_cod_fac AND CODI_INVE_TIPO_DOCU IN (\'FACTU\') and CODI_INVE_TIPO_EST > 0';		
 			
 			$sql_l = 'insert into INTER.INVE_DOCU_est_log (SELECT I.CODI_ADMI_EMPR_FINA, I.CODI_ADMI_PUNT_VENT, I.CODI_INVE_TIPO_DOCU, I.CODI_INVE_DOCU,I.CODI_INVE_TIPO_EST, I.COME_INVE_EST,I.FECH_INVE_APRUE FROM INTER.INVE_DOCUMENTOS_DAT I WHERE I.CODI_INVE_DOCU = :p_cod_fac AND CODI_INVE_TIPO_DOCU IN (\'FACTU\'))';
 				
 		}else{//cancelar solicitud
-		$sql = 'update INTER.INVE_DOCUMENTOS_DAT I set fech_inve_aprue = null, CODI_INVE_TIPO_EST = :p_estado, come_inve_est = null where I.CODI_INVE_DOCU = :p_cod_fac AND CODI_INVE_TIPO_DOCU IN (\'FACTU\')';					
+		$sql = 'update INTER.INVE_DOCUMENTOS_DAT I set fech_inve_aprue = null, CODI_INVE_TIPO_EST = :p_estado, come_inve_est = null where I.CODI_INVE_DOCU = :p_cod_fac AND CODI_INVE_TIPO_DOCU IN (\'FACTU\') and CODI_INVE_TIPO_EST > 0';					
 		
 		$sql_l = 'insert into INTER.INVE_DOCU_est_log (SELECT I.CODI_ADMI_EMPR_FINA, I.CODI_ADMI_PUNT_VENT, I.CODI_INVE_TIPO_DOCU, codi_inve_docu, codi_inve_tipo_est , \'SOLICITUD DE NC CANCELADA\' COME_INVE_EST, SYSDATE FECH_INVE_APRUE FROM INTER.INVE_DOCUMENTOS_DAT I WHERE I.CODI_INVE_DOCU = :p_cod_fac AND CODI_INVE_TIPO_DOCU IN (\'FACTU\'))';	
 		}
@@ -57,8 +57,8 @@ if ($accion <> ""){
 									 $mensaje = "Ocurrió un error al intentar GRABAR LOG...!";
 								}							
 							oci_free_statement($stid);		
-			
-		echo "<script>javascript:limpiarf();</script>";
+			echo $mensaje." ".$sql;
+		//echo "<script>javascript:limpiarf();</script>";
 	}
 	
 }
@@ -66,7 +66,7 @@ if ($accion <> ""){
 /*busqueda por numero de facturas*/
 $b_nfacturas = $_REQUEST['b_nfacturas'];
 if ($b_nfacturas<>''){
-	$where_nf = " and REFE_INVE_DOC like '%".$b_nfacturas."%'";
+	$where_nf = " and CODI_INVE_DOCU like '%".$b_nfacturas."%'";
 }else{$where_nf = '';}
 /*********************************/
 

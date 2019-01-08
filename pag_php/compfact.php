@@ -81,7 +81,7 @@ $sql = 'SELECT count(1) total FROM INTER.INVE_DOCUMENTOS_DAT Where CODI_ADMI_EST
 
 if($row['TOTAL'] == 0){	
 	//echo "<script>alert('Su busqueda no tiene resultados, intentelo nuevamente...!');limpiarf();</script>"; 
-	echo "<script>alert('Su busqueda no tiene resultados que mostrar, intentelo nuevamente en pocos minutos o espere notificacion vía e-mail...!');limpiarf();</script>"; 	
+	echo "<script>alert('Su busqueda no tiene resultados que mostrar, intentelo nuevamente en pocos minutos o espere notificacion vía e-mail...!');</script>"; 	
 }else{ 
 	if(isset($_POST['limite'])){
 		$limit = $_POST['limite'];
@@ -394,7 +394,7 @@ onShow:function( ct ){
 								break;				
 
 								case "NUMERO_FAC":
-								echo "<th scope=\"row\"><a href=\"#\" onclick=\"javascript:funIrpag('$value');\">".$value."</a></th>";
+								echo "<th scope=\"row\"><a href=\"#\" onclick=\"javascript:funIrpag('$codigo_fac');\">".$value."</a></th>";
 								break;																						
 
 								case "COD_ESTADO":
