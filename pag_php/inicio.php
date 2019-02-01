@@ -61,8 +61,11 @@ color: #E0A800 !important;
 		  <a class="nav-link" href="javascript: void(0);" onClick="javascript:cargarproductos(1);"><strong>ADMINISTRACIÓN DE FACTURAS</strong></a>
 	  </li>
       <li class="nav-item">
-		  <a class="nav-link" href="javascript: void(0);" onClick="javascript:cargarproductosNC(1);"><strong>ADMINISTRACIÓN DE NOTAS DE CRÉDITO</strong></a>
+		  <a class="nav-link" href="javascript: void(0);" onClick="javascript:cargarproductosNC(1);"><strong>ADMINISTRACIÓN NOTAS DE CRÉDITO</strong></a>
 	  </li>
+      <li class="nav-item">
+		  <a class="nav-link" href="javascript: void(0);" onClick="javascript:cargarcambio();"><strong>CAMBIO DE CONTRASE&Ntilde;A</strong></a>
+	  </li>		
       <li class="nav-item">
 		  <a class="nav-link" href="javascript: void(0);" onClick="javascript:window.location.href='../fun_php/salir.php'"><strong>SALIR</strong></a>
 	  </li>
@@ -202,6 +205,14 @@ color: #E0A800 !important;
 			});		
 		}	
 	
+	/*//////////////////////////////////////CAMBIO DE CLAVE ////////////////////////////////////////////////////////////////////////////*/	
+		
+	function cargarcambio(){
+			var url="cambiocu.php";
+			$.post(url,function (responseText){
+				$("#productos").html(responseText);
+			});
+		}	
 </script>	
 </body>
 </html>

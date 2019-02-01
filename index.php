@@ -24,12 +24,12 @@ function nuevo()
 		document.ingreso.clave.value="";   
 	    document.ingreso.nombre.focus();		
 	}
-	/*if (document.ingreso.validar.value=="5")
+	if (document.ingreso.validar.value=="5")
 	{   
-	   alert("Clave Incorrecta...!");
-	   document.ingreso.nombre.value = "<?php //echo $_SESSION['LOGIN'];?>";
-	   document.ingreso.clave.focus();
-	}*/
+	   alert("Cambio de contraseña realizado correctamente.\n Vuelva a ingresar al sistema con su nueva contraseña");
+	   document.ingreso.nombre.focus();//.value = "<?php //echo $_SESSION['LOGIN'];?>";
+	   //document.ingreso.clave.focus();
+	}
 	/*if (document.ingreso.validar.value=="8")
 	{    
 	    alert("Contraseña enviada por correo.\nSu clave de acceso al sistema se envio a la dirección de correo registrada para este usuario");
