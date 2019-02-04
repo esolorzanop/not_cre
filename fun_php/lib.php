@@ -10,7 +10,7 @@ function conectar()
 	
 	//$db = "(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.1.114)(PORT = 1521))(CONNECT_DATA = (SID = db11g)))";
 
-	$conn = oci_connect($username,$passwd,$db,'WE8ISO8859P15');
+	$conn = oci_connect($username,$passwd,$db,'UTF8');//,'WE8ISO8859P15'
 	$err = oci_error();
 
 	if ($err){

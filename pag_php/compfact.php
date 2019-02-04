@@ -81,7 +81,7 @@ $sql = 'SELECT count(1) total FROM INTER.INVE_DOCUMENTOS_DAT Where CODI_ADMI_EST
 
 if($row['TOTAL'] == 0){	
 	//echo "<script>alert('Su busqueda no tiene resultados, intentelo nuevamente...!');limpiarf();</script>"; 
-	echo "<script>alert('Su busqueda no tiene resultados que mostrar, intentelo nuevamente en pocos minutos o espere notificacion vía e-mail...!');</script>"; 	
+	echo "<script>alert('Su busqueda no tiene resultados que mostrar, intentelo nuevamente en pocos minutos o espere notificacion vía e-mail...!');limpiarf();</script>"; 	
 }else{ 
 	if(isset($_POST['limite'])){
 		$limit = $_POST['limite'];
