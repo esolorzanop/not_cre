@@ -16,7 +16,7 @@ if ($accion <> ""){
 		$fact_come = strtoupper($_REQUEST['come']);//comentario
 		$cod_factura = $_REQUEST['cod_factura'];//codigo factura	
 		
-		echo $accion." ".$fact_esta." ".$fact_come." ".$cod_factura;
+	//	echo $accion." ".$fact_esta." ".$fact_come." ".$cod_factura;
 			
 		if ($fact_esta <> 0){
 			$sql = 'update INTER.INVE_DOCUMENTOS_DAT I set fech_inve_aprue = sysdate, CODI_INVE_TIPO_EST = :p_estado, come_inve_est = :p_comentario where I.CODI_INVE_DOCU = :p_cod_fac AND CODI_INVE_TIPO_DOCU IN (\'FACTU\') and CODI_INVE_TIPO_EST > 0';		
@@ -57,8 +57,8 @@ if ($accion <> ""){
 									 $mensaje = "Ocurrió un error al intentar GRABAR LOG...!";
 								}							
 							oci_free_statement($stid);		
-			echo $mensaje." ".$sql;
-		//echo "<script>javascript:limpiarf();</script>";
+		//	echo $mensaje." ".$sql;
+		echo "<script>javascript:limpiarf();</script>";
 	}
 	
 }
@@ -265,23 +265,23 @@ Restante2.innerHTML = 0
 <?php 
 										switch ($row['CODI_INVE_TIPO_EST']){
 											case 1:
-												$clase = ' badge  badge-pill badge-danger';
+												$clase = ' badge badge-danger';
 											break;
 												
 											case 2:
-												$clase = ' badge  badge-pill badge-warning';
+												$clase = ' badge badge-warning';
 											break;
 												
 											case 3:
-												$clase = ' badge  badge-pill badge-success"';
+												$clase = ' badge badge-success"';
 											break;
 												
 											case 4:
-												$clase = ' badge  badge-pill badge-dark"';
+												$clase = ' badge badge-dark"';
 											break;
 												
 											case 5:
-												$clase = ' badge  badge-pill badge-info"';
+												$clase = ' badge badge-info"';
 											break;	
 												
 											default:

@@ -3,12 +3,12 @@ function conectar()
 {
 	
 	$username = "SISTEMAS"; //"INTER";
-	$passwd = "SISTEMAS2015FE";//"PRUEBAS";
+	$passwd = "PRUEBAS"; //"SISTEMAS2015FE";
 	
 	
-    $db = "(DESCRIPTION = (ADDRESS_LIST = (FAILOVER = on)(LOAD_BALANCE = on)(SOURCE_ROUTE = off)(ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.1.17)(PORT = 1521))(ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.1.18)(PORT = 1521)))(CONNECT_DATA = (SERVER = dedicated)(SERVICE_NAME = GLTEVRAC)))";
+    //$db = "(DESCRIPTION = (ADDRESS_LIST = (FAILOVER = on)(LOAD_BALANCE = on)(SOURCE_ROUTE = off)(ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.1.17)(PORT = 1521))(ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.1.18)(PORT = 1521)))(CONNECT_DATA = (SERVER = dedicated)(SERVICE_NAME = GLTEVRAC)))";
 	
-	//$db = "(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.1.114)(PORT = 1521))(CONNECT_DATA = (SID = db11g)))";
+	$db = "(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.1.114)(PORT = 1521))(CONNECT_DATA = (SID = db11g)))";
 
 	$conn = oci_connect($username,$passwd,$db,'UTF8');//,'WE8ISO8859P15'
 	$err = oci_error();

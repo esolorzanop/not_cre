@@ -43,7 +43,7 @@ $b_estadof = isset($_REQUEST['b_estadof']) ? $_REQUEST['b_estadof']:$_SESSION['b
 		}
 	}else{
 		//$where_ef = " and CODI_INVE_TIPO_EST in (0)";
-		$where_ef = " and CODI_INVE_TIPO_EST in (0) and CODI_INVE_DOCU NOT IN (select CODI_INVE_DOCU from INTER.BANC_PAGOS_DAT B WHERE B.CODI_ADMI_EMPR_FINA = '00001' AND B.CODI_ADMI_PUNT_VENT = '101' AND B.CODI_INVE_TIPO_DOCU IN ('NCCLI'))";		 
+		$where_ef = " and CODI_INVE_DOCU NOT IN (select CODI_INVE_DOCU from INTER.BANC_PAGOS_DAT B WHERE B.CODI_ADMI_EMPR_FINA = '00001' AND B.CODI_ADMI_PUNT_VENT = '101' AND B.CODI_INVE_TIPO_DOCU IN ('NCCLI'))";		 
 		$b_estadof = $_SESSION['b_estadof'] = '';
 		if($b_nfacturas<>'')
 		{$where_ef = '';}
@@ -69,13 +69,14 @@ if ($accion == 'refrescar'){
 	$where_nf = $where_cl = $where_fec = '';	
 	$_SESSION['cod_cliente'] = $_SESSION['b_cliente'] = $_SESSION['b_estadof'] = $_SESSION['b_dfecha'] = $_SESSION['b_hfecha'] = '';	
 	//$where_ef = " and CODI_INVE_TIPO_EST in (0)";
-	$where_ef = " and CODI_INVE_TIPO_EST in (0) and CODI_INVE_DOCU NOT IN (select CODI_INVE_DOCU from INTER.BANC_PAGOS_DAT B WHERE B.CODI_ADMI_EMPR_FINA = '00001' AND B.CODI_ADMI_PUNT_VENT = '101' AND B.CODI_INVE_TIPO_DOCU IN ('NCCLI'))";
+	$where_ef = " and CODI_INVE_DOCU NOT IN (select CODI_INVE_DOCU from INTER.BANC_PAGOS_DAT B WHERE B.CODI_ADMI_EMPR_FINA = '00001' AND B.CODI_ADMI_PUNT_VENT = '101' AND B.CODI_INVE_TIPO_DOCU IN ('NCCLI'))";
 }
 
 $where = $where_nf.$where_cl.$where_ef.$where_fec;
 
 
 $sql = 'SELECT count(1) total FROM INTER.INVE_DOCUMENTOS_DAT Where CODI_ADMI_ESTA = \'O\' AND CODI_ADMI_EMPR_FINA = \'00001\' AND CODI_ADMI_PUNT_VENT = \'101\' AND CODI_INVE_TIPO_DOCU IN (\'NCCLI\') AND CODI_INVE_TIPO_EST >= 0'.$where;
+
 //echo $sql."<br>";
 
 	$rst = oci_parse($con, $sql);
@@ -89,7 +90,7 @@ $sql = 'SELECT count(1) total FROM INTER.INVE_DOCUMENTOS_DAT Where CODI_ADMI_EST
 	$row = oci_fetch_array($rst, OCI_ASSOC);	
 
 if($row['TOTAL'] == 0){	
-	//echo "<script>alert('Su busqueda no tiene resultados, intentelo nuevamente...!');limpiarf();</script>"; 
+	//echo "<script>alert('Su busqueda no tiene resultados, intentelo nuevamente...!');limpiarf();</script>"; limpiarNC();
 	echo "<script>alert('Su busqueda no tiene resultados que mostrar, intentelo nuevamente en pocos minutos o espere notificacion vía e-mail...!');limpiarNC();</script>"; 	
 }else{ 
 	if(isset($_POST['limite'])){
@@ -335,7 +336,7 @@ onShow:function( ct ){
 	oci_bind_by_name($rst, ':n_page_number', $n_page_number);	
 	oci_bind_by_name($rst, ':n_page_size', $n_page_size);
 	
-	//echo $sql;
+//	echo $sql;
 	//echo $_SESSION['sql_rpt'];
 	
 	$r = oci_execute($rst);

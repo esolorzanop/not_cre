@@ -96,8 +96,8 @@ and CODI_ADMI_EMPR_FINA = \'00001\'
 	$row = oci_fetch_array($rst, OCI_ASSOC);	
 
 if($row['TOTAL'] == 0){	
-	echo "<script>alert('Su busqueda no tiene resultados, intentelo nuevamente...!');limpiarNC();</script>"; 
-	//echo "<script>alert('Su busqueda no tiene resultados, intentelo nuevamente...!');</script>"; 	
+	//echo "<script>alert('Su busqueda no tiene resultados, intentelo nuevamente...!');limpiarNC();</script>"; 
+	echo "<script>alert('Su busqueda no tiene resultados, intentelo nuevamente...!');</script>"; 	
 }else{ 
 ?>
 <style>
@@ -329,15 +329,16 @@ Restante2.innerHTML = 0
 	<?php if (($_SESSION['TIPO_USU'] == 2)||($_SESSION['TIPO_USU'] == 3)){ 
 				//	$mensaje_ne = "Negar Emisión de NC";					
 					//$oculto2 = '';
-					
+					$oculto = '';
+		
 				if ($_SESSION['TIPO_USU'] == 2){
-					if (($row['COME_INVE_EST'] <> '')||($row['CODI_INVE_TIPO_EST']<>0)){ 
+					if (($row['COME_INVE_EST'] <> '')and($row['CODI_INVE_TIPO_EST']<>0)){ 
 						$oculto = 'hidden';
 					}else{
 						$oculto = '';
 					}
 					$mensaje_ap = "Justificar NC no Re-Facturada";
-				}/*else{
+				}else{$oculto = 'hidden';}/*
 					if ($row['COME_INVE_EST'] == ''){ 
 						$oculto = 'hidden';
 					}else{

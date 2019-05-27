@@ -32,14 +32,23 @@ $b_cliente = isset($_REQUEST['b_cliente']) ? $_REQUEST['b_cliente']:$_SESSION['b
 /*busqueda por estado factura*/
 $b_estadof = isset($_REQUEST['b_estadof']) ? $_REQUEST['b_estadof']:$_SESSION['b_estadof'];
 	if (($b_estadof<>'-1000')&&($b_estadof<>'')){
+	//if (($b_estadof=='1')or($b_estadof=='2')or($b_estadof=='3')or($b_estadof=='4')or($b_estadof=='5')){
 		$where_ef = " and CODI_INVE_TIPO_EST = ".$b_estadof;
 		$_SESSION['b_estadof'] = $b_estadof;
 	}else{
-		$where_ef = " and CODI_INVE_TIPO_EST in (1,2,3)";
+		//$where_ef = " and CODI_INVE_TIPO_EST in (1,2,3)";
+		if ($_SESSION['TIPO_USU'] == 2){//PRE-APROBADOR
+		$where_ef = " and CODI_INVE_TIPO_EST in (1)"; //NC SOLICITADA
+		}else if ($_SESSION['TIPO_USU'] == 3){//APROBADOR
+		$where_ef = " and CODI_INVE_TIPO_EST in (2)"; //NC PRE-APROBADA
+		}else{$where_ef = " and CODI_INVE_TIPO_EST in (1,2,3)";}	//OTROS USUARIOS	
 		$b_estadof = $_SESSION['b_estadof'] = '';
 		if($b_nfacturas<>'')
 		{$where_ef = '';}
 		 }
+//	echo 'estado: '.$b_estadof.'<br>';
+	//echo 'where estado: '.$where_ef.'<br>';
+
 /*********************************/
 
 /*busqueda por fecha*/
@@ -60,40 +69,17 @@ if ($accion == 'refrescar'){
 	$b_nfacturas = $b_cliente = $cod_cliente = $b_estadof = $b_dfecha = $b_hfecha = '';
 	$where_nf = $where_cl = $where_fec = '';	
 	$_SESSION['cod_cliente'] = $_SESSION['b_cliente'] = $_SESSION['b_estadof'] = $_SESSION['b_dfecha'] = $_SESSION['b_hfecha'] = '';	
-	$where_ef = " and CODI_INVE_TIPO_EST in (1,2,3)";
+	//$where_ef = " and CODI_INVE_TIPO_EST in (1,2,3)";
+		if ($_SESSION['TIPO_USU'] == 2){//PRE-APROBADOR
+		$where_ef = " and CODI_INVE_TIPO_EST in (1)"; //NC SOLICITADA
+		}else if ($_SESSION['TIPO_USU'] == 3){//APROBADOR
+		$where_ef = " and CODI_INVE_TIPO_EST in (2)"; //NC PRE-APROBADA
+		}else{$where_ef = " and CODI_INVE_TIPO_EST in (1,2,3)";}	//OTROS USUARIOS		
 }
 
 $where = $where_nf.$where_cl.$where_ef.$where_fec;
 
 
-$sql = 'SELECT count(1) total FROM INTER.INVE_DOCUMENTOS_DAT Where CODI_ADMI_ESTA = \'O\' AND CODI_ADMI_EMPR_FINA = \'00001\' AND CODI_ADMI_PUNT_VENT = \'101\' AND CODI_INVE_TIPO_DOCU IN (\'FACTU\',\'REFAC\') AND CODI_INVE_TIPO_EST > 0'.$where;
-//echo $sql."<br>";
-
-	$rst = oci_parse($con, $sql);
-	$r = oci_execute($rst);
-
-	if (!$r) {
-		$e = oci_error($rst); 
-		echo "Ocurrió un error al verificar total de solicitud NC...!";
-	}
-
-	$row = oci_fetch_array($rst, OCI_ASSOC);	
-
-if($row['TOTAL'] == 0){	
-	//echo "<script>alert('Su busqueda no tiene resultados, intentelo nuevamente...!');limpiarf();</script>"; 
-	echo "<script>alert('Su busqueda no tiene resultados que mostrar, intentelo nuevamente en pocos minutos o espere notificacion vía e-mail...!');limpiarf();</script>"; 	
-}else{ 
-	if(isset($_POST['limite'])){
-		$limit = $_POST['limite'];
-		$_SESSION['limit'] = $_POST['limite'];
-	}else{
-		$limit = 1;
-		$_SESSION['limit'] = 1;
-	}
-			
-	$limite = ceil($row['TOTAL'] / 10);
-	$n_page_number = $limit; 
-	$n_page_size = 10;
 ?>
 <style>
 input,textarea[disabled]{background-color: #fff; opacity: 1 !important;}
@@ -297,17 +283,47 @@ onShow:function( ct ){
 
 </fieldset>
 </form>			
+<?php 
+$sql = 'SELECT count(1) total FROM INTER.INVE_DOCUMENTOS_DAT Where CODI_ADMI_ESTA = \'O\' AND CODI_ADMI_EMPR_FINA = \'00001\' AND CODI_ADMI_PUNT_VENT = \'101\' AND CODI_INVE_TIPO_DOCU IN (\'FACTU\',\'REFAC\')'.$where;//AND CODI_INVE_TIPO_EST > 0
+//echo $sql."<br>";
+
+	$rst = oci_parse($con, $sql);
+	$r = oci_execute($rst);
+
+	if (!$r) {
+		$e = oci_error($rst); 
+		echo "Ocurrió un error al verificar total de solicitud NC...!";
+	}
+
+	$row = oci_fetch_array($rst, OCI_ASSOC);	
+
+if($row['TOTAL'] == 0){	
+	//echo "<script>alert('Su busqueda no tiene resultados, intentelo nuevamente...!');limpiarf();</script>"; 
+	echo "<script>alert('Su busqueda no tiene resultados que mostrar, intentelo nuevamente en pocos minutos o espere notificacion vía e-mail...!');</script>"; 	
+}//else{ 
+	if(isset($_POST['limite'])){
+		$limit = $_POST['limite'];
+		$_SESSION['limit'] = $_POST['limite'];
+	}else{
+		$limit = 1;
+		$_SESSION['limit'] = 1;
+	}
+			
+	$limite = ceil($row['TOTAL'] / 10);
+	$n_page_number = $limit; 
+	$n_page_size = 10;				
+?>				
 <span class="clearfix"></span>				
 <!------------------------------------------------------------------------------>
 			<div class="table-responsive">
               <table class="table table-md table-striped">
                 <thead class="table-dark">
                   <tr align="center">                    
-					<th style="width: 12%"># FACTURA</th>                     
+					<th style="width: 12%"># FACTURA</th> 
+					<th style="width: 10%">VALOR FACTURA</th>					  
 					<th style="width: 10%">FECHA</th> 					  
 					<th style="width: 13%">CLIENTE</th> 
                     <th style="width: 20%">COMENTARIO</th>
-					<th style="width: 10%">TOTAL</th>
 					<th style="width: 11%">FECHA AUTORIZA NC</th>					  
                     <th style="width: 15%">COMENTARIO AUTORIZA NC</th>
                     <th style="width: 9%">ESTADO DOCUMENTO</th>                  
@@ -315,17 +331,17 @@ onShow:function( ct ){
                 </thead>
 <?php
 	$sql = 'SELECT * FROM (SELECT ROWNUM AS FILA, CONSULTA.* FROM (SELECT rownum ROW_NUMBER, CODI_INVE_DOCU, FECH_INVE_DOCU, 
-         TO_CHAR (FECH_INVE_DOCU, \'DD/MM/YYYY\') FECH_INVE_DOCU1, I.REFE_INVE_DOC, I.CODI_INVE_CLIE, I.COME_INVE_DOCU, TO_CHAR(IMPO_TOTA_INVE_DOCU, \'FM999,999,999.90\') IMPO_TOTA_INVE_DOCU, to_char(FECH_INVE_APRUE, \'DD/MM/YYYY\') FECH_INVE_APRUE, I.COME_INVE_EST, I.CODI_INVE_TIPO_EST FROM INTER.INVE_DOCUMENTOS_DAT I Where CODI_ADMI_ESTA = \'O\' AND CODI_ADMI_EMPR_FINA = \'00001\' AND CODI_ADMI_PUNT_VENT = \'101\' AND CODI_INVE_TIPO_DOCU IN (\'FACTU\',\'REFAC\') AND CODI_INVE_TIPO_EST > 0 '.$where.' ORDER BY FECH_INVE_DOCU DESC) CONSULTA) WHERE FILA >= (((:n_page_number-1) * :n_page_size) + 1) AND FILA < ((:n_page_number * :n_page_size) + 1 )';// AND CODI_INVE_TIPO_EST IN (1,2,3,4) LAS QUE DEBE CARGAR DE FAULT
+         TO_CHAR (FECH_INVE_DOCU, \'DD/MM/YYYY\') FECH_INVE_DOCU1, I.REFE_INVE_DOC, I.CODI_INVE_CLIE, I.COME_INVE_DOCU, TO_CHAR(IMPO_TOTA_INVE_DOCU, \'FM999,999,999.90\') IMPO_TOTA_INVE_DOCU, to_char(FECH_INVE_APRUE, \'DD/MM/YYYY\') FECH_INVE_APRUE, I.COME_INVE_EST, I.CODI_INVE_TIPO_EST FROM INTER.INVE_DOCUMENTOS_DAT I Where CODI_ADMI_ESTA = \'O\' AND CODI_ADMI_EMPR_FINA = \'00001\' AND CODI_ADMI_PUNT_VENT = \'101\' AND CODI_INVE_TIPO_DOCU IN (\'FACTU\',\'REFAC\') '.$where.' ORDER BY FECH_INVE_DOCU DESC) CONSULTA) WHERE FILA >= (((:n_page_number-1) * :n_page_size) + 1) AND FILA < ((:n_page_number * :n_page_size) + 1 )';// AND CODI_INVE_TIPO_EST IN (1,2,3,4) LAS QUE DEBE CARGAR DE FAULT AND CODI_INVE_TIPO_EST > 0
 									
 	$_SESSION['sql_rpt'] = "";
 	$_SESSION['sql_rpt'] = "SELECT rownum ROW_NUMBER, CODI_INVE_DOCU, FECH_INVE_DOCU, 
-         TO_CHAR (FECH_INVE_DOCU, 'DD/MM/YYYY') FECH_INVE_DOCU1, I.REFE_INVE_DOC, I.CODI_INVE_CLIE, I.COME_INVE_DOCU, TO_CHAR(IMPO_TOTA_INVE_DOCU, 'FM999,999,999.90') IMPO_TOTA_INVE_DOCU, to_char(FECH_INVE_APRUE, 'DD/MM/YYYY') FECH_INVE_APRUE, I.COME_INVE_EST, I.CODI_INVE_TIPO_EST FROM INTER.INVE_DOCUMENTOS_DAT I Where CODI_ADMI_ESTA = 'O' AND CODI_ADMI_EMPR_FINA = '00001' AND CODI_ADMI_PUNT_VENT = '101' AND CODI_INVE_TIPO_DOCU IN ('FACTU','REFAC') AND CODI_INVE_TIPO_EST > 0 $where ORDER BY FECH_INVE_DOCU DESC";
+         TO_CHAR (FECH_INVE_DOCU, 'DD/MM/YYYY') FECH_INVE_DOCU1, I.REFE_INVE_DOC, I.CODI_INVE_CLIE, I.COME_INVE_DOCU, TO_CHAR(IMPO_TOTA_INVE_DOCU, 'FM999,999,999.90') IMPO_TOTA_INVE_DOCU, to_char(FECH_INVE_APRUE, 'DD/MM/YYYY') FECH_INVE_APRUE, I.COME_INVE_EST, I.CODI_INVE_TIPO_EST FROM INTER.INVE_DOCUMENTOS_DAT I Where CODI_ADMI_ESTA = 'O' AND CODI_ADMI_EMPR_FINA = '00001' AND CODI_ADMI_PUNT_VENT = '101' AND CODI_INVE_TIPO_DOCU IN ('FACTU','REFAC') $where ORDER BY FECH_INVE_DOCU DESC"; //AND CODI_INVE_TIPO_EST > 0
 	
 	$rst = oci_parse($con, $sql);
 	oci_bind_by_name($rst, ':n_page_number', $n_page_number);	
 	oci_bind_by_name($rst, ':n_page_size', $n_page_size);
 	
-	//echo $sql;
+	echo $sql;
 	//echo $_SESSION['sql_rpt'];
 	
 	$r = oci_execute($rst);
@@ -345,7 +361,9 @@ onShow:function( ct ){
 	{
 		$productos[$row['ROW_NUMBER']]['CODIGO_FAC'] = $row['CODI_INVE_DOCU'];								
 		$productos[$row['ROW_NUMBER']]['NUMERO_FAC'] = $row['REFE_INVE_DOC'];	
+		$productos[$row['ROW_NUMBER']]['TOTAL_FACTURA'] = $row['IMPO_TOTA_INVE_DOCU'];						
 		$productos[$row['ROW_NUMBER']]['FECHA_FAC'] = $row['FECH_INVE_DOCU1'];	
+		
 		
 		$sql_cl = 'select nomb_inve_clie from inve_clientes_dat where codi_admi_empr_fina = \'00001\' and codi_admi_esta = \'A\' and codi_inve_clie ='.$row['CODI_INVE_CLIE'];
 		//echo $sql_cl;		  
@@ -360,8 +378,7 @@ onShow:function( ct ){
 		$row_cl = oci_fetch_array($rst_cl, OCI_ASSOC);
 		$productos[$row['ROW_NUMBER']]['CLIENTE'] = $row_cl['NOMB_INVE_CLIE'];
 		
-		$productos[$row['ROW_NUMBER']]['DETALLE_FAC'] = $row['COME_INVE_DOCU'];			
-		$productos[$row['ROW_NUMBER']]['TOTAL_FACTURA'] = $row['IMPO_TOTA_INVE_DOCU'];						
+		$productos[$row['ROW_NUMBER']]['DETALLE_FAC'] = $row['COME_INVE_DOCU'];					
 		$productos[$row['ROW_NUMBER']]['FECHA_APNC'] = $row['FECH_INVE_APRUE'];						
 		$productos[$row['ROW_NUMBER']]['DETALLE_APNC'] = $row['COME_INVE_EST'];
 		$productos[$row['ROW_NUMBER']]['COD_ESTADO'] = $row['CODI_INVE_TIPO_EST'];
@@ -400,23 +417,23 @@ onShow:function( ct ){
 								case "COD_ESTADO":
 										switch ($value){
 											case 1:
-												$clase = 'class = "badge  badge-pill badge-danger"';
+												$clase = 'class = "badge badge-danger"';
 											break;
 												
 											case 2:
-												$clase = 'class = "badge  badge-pill badge-warning"';
+												$clase = 'class = "badge badge-warning"';
 											break;
 												
 											case 3:
-												$clase = 'class = "badge  badge-pill badge-success"';
+												$clase = 'class = "badge badge-success"';
 											break;
 												
 											case 4:
-												$clase = 'class = "badge  badge-pill badge-dark"';
+												$clase = 'class = "badge badge-dark"';
 											break;
 												
 											case 5:
-												$clase = 'class = "badge  badge-pill badge-info"';
+												$clase = 'class = "badge badge-info"';
 											break;	
 												
 											default:
@@ -441,7 +458,7 @@ onShow:function( ct ){
 					}
 					echo '</tr>'; 
 				}
-	
+					//}
 ?>                
                 </tbody>
               </table>
@@ -580,6 +597,3 @@ $("#form1").submit(function(e){
 	e.preventDefault();
 });	
 </script>
-<?php 
-}
-?>

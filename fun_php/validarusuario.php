@@ -4,8 +4,8 @@ include("lib.php");
 date_default_timezone_set('America/Guayaquil');	
 
 
-$login=strtoupper(isset($_REQUEST["nombre"]) ? trim($_REQUEST["nombre"]):NULL);
-$clave=isset($_REQUEST["clave"]) ? $_REQUEST["clave"]:NULL;
+$login = strtoupper(isset($_REQUEST["nombre"]) ? trim($_REQUEST["nombre"]):NULL);
+$clave = isset($_REQUEST["clave"]) ? $_REQUEST["clave"]:NULL;
 
 $con = conectar();
 
